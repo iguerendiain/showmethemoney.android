@@ -39,6 +39,12 @@ public class TestActivity extends BaseActivity implements View.OnClickListener {
     @BindView(R.id.createRecord)
     View createRecord;
 
+    @BindView(R.id.createCurrency)
+    View createCurrency;
+
+    @BindView(R.id.createAccount)
+    View createAccount;
+
     private String toStringLines(List stuff){
         String result = "";
         for (Object o : stuff){
@@ -56,6 +62,8 @@ public class TestActivity extends BaseActivity implements View.OnClickListener {
         syncNow.setOnClickListener(this);
         refresh.setOnClickListener(this);
         createRecord.setOnClickListener(this);
+        createAccount.setOnClickListener(this);
+        createCurrency.setOnClickListener(this);
     }
 
     @Override
@@ -71,8 +79,16 @@ public class TestActivity extends BaseActivity implements View.OnClickListener {
                 requestSyncNow();
                 break;
             case R.id.createRecord:
-                Intent i = new Intent(this, AddRecordActivity.class);
-                startActivity(i);
+                Intent i1 = new Intent(this, AddRecordActivity.class);
+                startActivity(i1);
+                break;
+            case R.id.createAccount:
+                Intent i2 = new Intent(this, AddAccountActivity.class);
+                startActivity(i2);
+                break;
+            case R.id.createCurrency:
+                Intent i3 = new Intent(this, AddCurrencyActivity.class);
+                startActivity(i3);
                 break;
             case R.id.refresh:
                 refreshData();

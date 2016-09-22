@@ -1,5 +1,8 @@
 package nacholab.showmethemoney.api;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import android.util.Log;
 
 import java.io.IOException;
@@ -15,7 +18,7 @@ public class APIClient {
 
     private static final String TAG = "APICONNECTION";
 
-    private static final String BASE_URL = "http://192.168.1.2:7474/";
+    private static final String BASE_URL = "http://192.168.1.2:8050/";
 
     private final MainApplication app;
     private Retrofit retrofit;
@@ -25,9 +28,9 @@ public class APIClient {
         app = _app;
         if (retrofit == null || apiCalls == null) {
 
-//            Gson gson = new GsonBuilder()
-//                    .excludeFieldsWithoutExposeAnnotation()
-//                    .create();
+            Gson gson = new GsonBuilder()
+                    .excludeFieldsWithoutExposeAnnotation()
+                    .create();
 
             OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
 
@@ -40,14 +43,14 @@ public class APIClient {
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .client(okHttpClient)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
 
             apiCalls = retrofit.create(APICalls.class);
         }
     }
 
-    public MainSyncData getMainSyncData() {
+    public MainSyncData getMainSyncData() throws IOException {
         try {
             return apiCalls.getMainSync().execute().body();
         } catch (IOException e) {
@@ -56,7 +59,7 @@ public class APIClient {
         }
     }
 
-    public void postMainSyncData(MainSyncData data) {
+    public void postMainSyncData(MainSyncData data) throws IOException {
         try {
             apiCalls.postMainSync(data).execute();
         } catch (IOException e) {
@@ -64,9 +67,10 @@ public class APIClient {
         }
     }
 
-    private void handleIOException(IOException e, String source){
+    private void handleIOException(IOException e, String source) throws IOException {
         Log.e(TAG,"An exception was thrown while running "+source);
         e.printStackTrace();
+        throw e;
     }
 
 }

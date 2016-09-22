@@ -1,20 +1,31 @@
 package nacholab.showmethemoney.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class Currency extends DBModel{
-    private String _id;
+    @Expose
+    @SerializedName("id")
+    private int DBid;
+
+    @Expose
     private String name;
+
+    @Expose
     private String slug;
+
+    @Expose
     private float factor;
 
     public Currency() {
     }
 
-    public String get_id() {
-        return _id;
+    public int getDBid() {
+        return DBid;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+    public void setDBid(int DBid) {
+        this.DBid = DBid;
     }
 
     public String getName() {
@@ -43,6 +54,11 @@ public class Currency extends DBModel{
 
     @Override
     public String toString() {
-        return name+" ("+slug+") x"+factor;
+        String render = name+" ("+slug+") x"+factor;
+        if (!isSynced()){
+            render+=" NOT SYNCED";
+        }
+        return render;
+
     }
 }

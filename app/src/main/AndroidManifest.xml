@@ -61,7 +61,8 @@
         </activity>
 
         <activity android:name=".ui.activity.AddRecordActivity" android:screenOrientation="userPortrait" />
-
+        <activity android:name=".ui.activity.AddAccountActivity" android:screenOrientation="userPortrait" />
+        <activity android:name=".ui.activity.AddCurrencyActivity" android:screenOrientation="userPortrait" />
 
     </application>
 

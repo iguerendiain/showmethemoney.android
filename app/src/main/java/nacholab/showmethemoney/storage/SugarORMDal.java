@@ -28,24 +28,7 @@ public class SugarORMDal extends BaseDal {
         List<MoneyRecord> records = data.getRecords();
 
         SugarRecord.saveInTx(currencies);
-
-        for (MoneyAccount a : accounts){
-            Currency accountCurrency = a.getCurrency();
-            Currency dbCurrency = SugarRecord.find(Currency.class, "slug=?",accountCurrency.getSlug()).get(0);
-            a.setCurrency(dbCurrency);
-        }
-
         SugarRecord.saveInTx(accounts);
-
-        for (MoneyRecord r : records){
-            Currency recordCurrency = r.getCurrency();
-            MoneyAccount recordAccount = r.getAccount();
-            Currency dbCurrency = SugarRecord.find(Currency.class, "slug=?",recordCurrency.getSlug()).get(0);
-            MoneyAccount dbAccount = SugarRecord.find(MoneyAccount.class, "slug=?",recordAccount.getSlug()).get(0);
-            r.setCurrency(dbCurrency);
-            r.setAccount(dbAccount);
-        }
-
         SugarRecord.saveInTx(records);
     }
 
@@ -60,7 +43,7 @@ public class SugarORMDal extends BaseDal {
     }
 
     @Override
-    public MoneyRecord addRecord(int amount, MoneyRecord.Type type, String description, MoneyAccount account, Currency currency) {
+    public MoneyRecord addRecord(int amount, MoneyRecord.Type type, String description, String account, String currency) {
         MoneyRecord record = new MoneyRecord();
         record.setType(type);
         record.setAmount(amount);
@@ -76,7 +59,11 @@ public class SugarORMDal extends BaseDal {
     public MainSyncData buildUploadMainSyncData(long lastSync) {
         MainSyncData data = new MainSyncData();
         List<MoneyRecord> records = SugarRecord.find(MoneyRecord.class, "synced = ?", "0");
+        List<MoneyAccount> accounts = SugarRecord.find(MoneyAccount.class, "synced = ?", "0");
+        List<Currency> currencies = SugarRecord.find(Currency.class, "synced = ?", "0");
         data.setRecords(records);
+        data.setCurrencies(currencies);
+        data.setAccounts(accounts);
         return data;
     }
 
@@ -88,5 +75,28 @@ public class SugarORMDal extends BaseDal {
             }
             SugarRecord.saveInTx(data.getRecords());
         }
+    }
+
+    @Override
+    public Currency addCurrency(String name, String slug, float factor) {
+        Currency currency = new Currency();
+        currency.setName(name);
+        currency.setSlug(slug);
+        currency.setFactor(factor);
+        currency.setSynced(false);
+        currency.save();
+        return currency;
+    }
+
+    @Override
+    public MoneyAccount addAccount(String name, String slug, String currency, int balance) {
+        MoneyAccount account = new MoneyAccount();
+        account.setName(name);
+        account.setSlug(slug);
+        account.setCurrency(currency);
+        account.setBalance(balance);
+        account.setSynced(false);
+        account.save();
+        return account;
     }
 }

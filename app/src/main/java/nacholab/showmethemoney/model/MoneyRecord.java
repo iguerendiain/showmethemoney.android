@@ -1,31 +1,40 @@
 package nacholab.showmethemoney.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class MoneyRecord extends DBModel {
 
     public enum Type{PATCH, EXPENSE, INCOME}
 
-    public static final int PATCH = 0;
-    public static final int EXPENSE = 1;
-    public static final int INCOME = 2;
+    @Expose
+    @SerializedName("id")
+    private int DBid;
 
-    private String _id;
+    @Expose
     private String description;
-    private MoneyAccount account;
-    private Currency currency;
+
+    @Expose
+    private String account;
+
+    @Expose
+    private String currency;
+
+    @Expose
+    private Type type;
+
+    @Expose
+    private int amount;
 
     public MoneyRecord() {
     }
 
-    private Type type;
-
-    private int amount;
-
-    public String get_id() {
-        return _id;
+    public int getDBid() {
+        return DBid;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+    public void setDBid(int DBid) {
+        this.DBid = DBid;
     }
 
     public String getDescription() {
@@ -36,19 +45,19 @@ public class MoneyRecord extends DBModel {
         this.description = description;
     }
 
-    public MoneyAccount getAccount() {
+    public String getAccount() {
         return account;
     }
 
-    public void setAccount(MoneyAccount account) {
+    public void setAccount(String account) {
         this.account = account;
     }
 
-    public Currency getCurrency() {
+    public String getCurrency() {
         return currency;
     }
 
-    public void setCurrency(Currency currency) {
+    public void setCurrency(String currency) {
         this.currency = currency;
     }
 
@@ -70,7 +79,7 @@ public class MoneyRecord extends DBModel {
 
     @Override
     public String toString() {
-        String render = "["+type+"] "+description+" on "+account.getName()+" ("+amount+"/"+currency.getSlug()+")";
+        String render = "["+type+"] "+description+" on "+account+" ("+amount+"/"+currency+")";
         if (!isSynced()){
             render+=" NOT SYNCED";
         }

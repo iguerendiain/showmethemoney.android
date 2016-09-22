@@ -5,13 +5,13 @@ import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.SyncResult;
 import android.os.Bundle;
-import android.util.Log;
+
+import java.io.IOException;
 
 import nacholab.showmethemoney.MainApplication;
 import nacholab.showmethemoney.model.MainSyncData;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
-    private static final String TAG = "SyncAdapter";
     private final MainApplication app;
 
     public SyncAdapter(MainApplication _app) {
@@ -21,11 +21,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle bundle, String s, ContentProviderClient contentProviderClient, SyncResult syncResult) {
-        MainSyncData uploadPayload = app.getDal().buildUploadMainSyncData(app.getSettings().getLastSync());
-        app.getApiClient().postMainSyncData(uploadPayload);
-        app.getDal().setSynced(uploadPayload, true);
-        MainSyncData downloadPayload = app.getApiClient().getMainSyncData();
-        app.getDal().saveOrUpdateMainSyncData(downloadPayload);
+        try {
+            MainSyncData uploadPayload = app.getDal().buildUploadMainSyncData(app.getSettings().getLastSync());
+            app.getApiClient().postMainSyncData(uploadPayload);
+            app.getDal().setSynced(uploadPayload, true);
+            MainSyncData downloadPayload = app.getApiClient().getMainSyncData();
+            app.getDal().saveOrUpdateMainSyncData(downloadPayload);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+
 
 }

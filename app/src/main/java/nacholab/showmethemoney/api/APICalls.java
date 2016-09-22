@@ -8,10 +8,10 @@ import retrofit2.http.POST;
 
 public interface APICalls {
 
-    @GET("/mainSync.json")
+    @GET("/mainSync")
     Call<MainSyncData> getMainSync();
 
     @POST("/mainSync")
-    Call<MainSyncData> postMainSync(@Body MainSyncData data);
+    Call<Void> postMainSync(@Body MainSyncData data);
 
 }

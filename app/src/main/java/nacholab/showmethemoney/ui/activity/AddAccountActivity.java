@@ -19,58 +19,49 @@ import nacholab.showmethemoney.model.MoneyRecord;
 import nacholab.showmethemoney.ui.adapter.AccountSpinnerAdapter;
 import nacholab.showmethemoney.ui.adapter.CurrencySpinnerAdapter;
 
-public class AddRecordActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class AddAccountActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
-    @BindView(R.id.accounts)
-    Spinner accounts;
+    @BindView(R.id.name)
+    EditText name;
+
+    @BindView(R.id.slug)
+    EditText slug;
+
+    @BindView(R.id.balance)
+    EditText balance;
 
     @BindView(R.id.currencies)
     Spinner currencies;
 
-    @BindView(R.id.amount)
-    EditText amount;
+    @BindView(R.id.createAccount)
+    View createAccount;
 
-    @BindView(R.id.description)
-    EditText description;
-
-    @BindView(R.id.createRecord)
-    View createRecord;
-
-    @BindView(R.id.income_switch)
-    Switch incomeSwitch;
-
-    private List<MoneyAccount> dbAccounts;
     private List<Currency> dbCurrencies;
 
-    private MoneyAccount currentAccount;
     private Currency currentCurrency;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_addrecord);
+        setContentView(R.layout.activity_addaccount);
         ButterKnife.bind(this);
-        dbAccounts = getMainApp().getDal().getAccounts();
-        accounts.setAdapter(new AccountSpinnerAdapter(this, dbAccounts));
         dbCurrencies = getMainApp().getDal().getCurrencies();
         currencies.setAdapter(new CurrencySpinnerAdapter(this, dbCurrencies));
-        accounts.setOnItemSelectedListener(this);
         currencies.setOnItemSelectedListener(this);
-        createRecord.setOnClickListener(this);
-        currentAccount = dbAccounts.get(0);
+        createAccount.setOnClickListener(this);
         currentCurrency = dbCurrencies.get(0);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.createRecord:
-                getMainApp().getDal().addRecord(
-                        Integer.parseInt(amount.getText().toString()),
-                        incomeSwitch.isChecked()? MoneyRecord.Type.INCOME: MoneyRecord.Type.EXPENSE,
-                        description.getText().toString(),
-                        currentAccount.getSlug(),
-                        currentCurrency.getSlug());
+            case R.id.createAccount:
+                getMainApp().getDal().addAccount(
+                        name.getText().toString(),
+                        slug.getText().toString(),
+                        currentCurrency.getSlug(),
+                        Integer.parseInt(balance.getText().toString())
+                );
                 finish();
         }
     }
@@ -78,9 +69,6 @@ public class AddRecordActivity extends BaseActivity implements View.OnClickListe
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         switch (adapterView.getId()){
-            case R.id.accounts:
-                currentAccount = dbAccounts.get(i);
-                break;
             case R.id.currencies:
                 currentCurrency = dbCurrencies.get(i);
                 break;
