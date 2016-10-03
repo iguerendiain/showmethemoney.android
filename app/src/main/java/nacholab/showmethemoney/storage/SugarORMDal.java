@@ -13,6 +13,14 @@ import nacholab.showmethemoney.model.MoneyRecord;
 
 public class SugarORMDal extends BaseDal {
 
+    private static final String SYNCED = "synced";
+    private static final String DELETED = "deleted";
+    private static final String WHERE_SYNCED_AND_DELETED = SYNCED+"=? and "+DELETED+"=?";
+    private static final String WHERE_DELETED = DELETED+"=?";
+    private static final String TRUE = "1";
+    private static final String FALSE = "0";
+
+
     public SugarORMDal(MainApplication app) {
         SugarContext.init(app);
     }
@@ -34,12 +42,35 @@ public class SugarORMDal extends BaseDal {
 
     @Override
     public List<MoneyAccount> getAccounts() {
-        return SugarRecord.listAll(MoneyAccount.class);
+        return SugarRecord.find(MoneyAccount.class, WHERE_DELETED, FALSE);
     }
 
     @Override
     public List<Currency> getCurrencies() {
-        return SugarRecord.listAll(Currency.class);
+        return SugarRecord.find(Currency.class, WHERE_DELETED, FALSE);
+    }
+
+    @Override
+    public List<MoneyRecord> getRecords() {
+        return SugarRecord.find(MoneyRecord.class, WHERE_DELETED, FALSE);
+    }
+
+    @Override
+    public void markAsDeleted(Currency c) {
+        c.setDeleted(true);
+        c.save();
+    }
+
+    @Override
+    public void markAsDeleted(MoneyAccount a) {
+        a.setDeleted(true);
+        a.save();
+    }
+
+    @Override
+    public void markAsDeleted(MoneyRecord d) {
+        d.setDeleted(true);
+        d.save();
     }
 
     @Override
@@ -58,12 +89,18 @@ public class SugarORMDal extends BaseDal {
     @Override
     public MainSyncData buildUploadMainSyncData(long lastSync) {
         MainSyncData data = new MainSyncData();
-        List<MoneyRecord> records = SugarRecord.find(MoneyRecord.class, "synced = ?", "0");
-        List<MoneyAccount> accounts = SugarRecord.find(MoneyAccount.class, "synced = ?", "0");
-        List<Currency> currencies = SugarRecord.find(Currency.class, "synced = ?", "0");
+        List<MoneyRecord> records = SugarRecord.find(MoneyRecord.class, WHERE_SYNCED_AND_DELETED, FALSE, FALSE);
+        List<MoneyAccount> accounts = SugarRecord.find(MoneyAccount.class, WHERE_SYNCED_AND_DELETED, FALSE, FALSE);
+        List<Currency> currencies = SugarRecord.find(Currency.class, WHERE_SYNCED_AND_DELETED, FALSE, FALSE);
+        List<MoneyRecord> recordsToDelete = SugarRecord.find(MoneyRecord.class, WHERE_SYNCED_AND_DELETED, FALSE, TRUE);
+        List<MoneyAccount> accountsToDelete = SugarRecord.find(MoneyAccount.class, WHERE_SYNCED_AND_DELETED, FALSE, TRUE);
+        List<Currency> currenciesToDelete = SugarRecord.find(Currency.class, WHERE_SYNCED_AND_DELETED, FALSE, TRUE);
         data.setRecords(records);
         data.setCurrencies(currencies);
         data.setAccounts(accounts);
+        data.setRecordsToDelete(recordsToDelete);
+        data.setCurrenciesToDelete(currenciesToDelete);
+        data.setAccountsToDelete(accountsToDelete);
         return data;
     }
 
@@ -75,6 +112,13 @@ public class SugarORMDal extends BaseDal {
             }
             SugarRecord.saveInTx(data.getRecords());
         }
+    }
+
+    @Override
+    public void cleanDeleted(){
+        SugarRecord.deleteAll(MoneyRecord.class, WHERE_SYNCED_AND_DELETED, TRUE, TRUE);
+        SugarRecord.deleteAll(MoneyAccount.class, WHERE_SYNCED_AND_DELETED, TRUE, TRUE);
+        SugarRecord.deleteAll(Currency.class, WHERE_SYNCED_AND_DELETED, TRUE, TRUE);
     }
 
     @Override

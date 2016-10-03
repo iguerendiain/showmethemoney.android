@@ -3,18 +3,24 @@ package nacholab.showmethemoney.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Currency extends DBModel{
+import com.activeandroid.annotation.Column;
+
+public class Currency extends DBModel {
     @Expose
     @SerializedName("id")
+    @Column
     private int DBid;
 
     @Expose
+    @Column
     private String name;
 
     @Expose
+    @Column
     private String slug;
 
     @Expose
+    @Column
     private float factor;
 
     public Currency() {

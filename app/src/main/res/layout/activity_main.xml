@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                        android:padding="11dp"
+                        android:background="@color/primary"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/toolbarHeight">
+
+                        <TextView
+                                android:id="@+id/title"
+                                android:textSize="@dimen/toolbarTextSize"
+                                android:textColor="@color/icons"
+                                android:text="A Title that should never be shown"
+                                android:layout_centerVertical="true"
+                                android:layout_alignParentStart="true"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                        <ImageView
+                                android:id="@+id/refresh"
+                                android:src="@drawable/ic_action_navigation_refresh"
+                                android:layout_width="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_alignParentEnd="true"
+                                android:layout_height="wrap_content"/>
+
+                </RelativeLayout>
+
+                <com.ogaclejapan.smarttablayout.SmartTabLayout
+                        android:id="@+id/tabs"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/tabsHeight"
+                        android:background="@color/primary"
+                        app:stl_indicatorInterpolation="smart"
+                        app:stl_indicatorGravity="bottom"
+                        app:stl_indicatorColor="@color/accent"
+                        app:stl_indicatorThickness="4dp"
+                        app:stl_distributeEvenly="true"
+                        app:stl_clickable="true"
+                        app:stl_underlineThickness="0dp"
+                        app:stl_drawDecorationAfterTab="true"
+                        app:stl_dividerColor="@color/primary"/>
+
+                <include layout="@layout/view_toolbar_shadow" android:layout_width="match_parent" android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <android.support.v4.view.ViewPager
+                android:id="@+id/panes"
+                android:layout_marginTop="@dimen/toolbarPlusTabsHeight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+</RelativeLayout>

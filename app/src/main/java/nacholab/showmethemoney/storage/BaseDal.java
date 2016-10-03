@@ -16,4 +16,9 @@ public abstract class BaseDal {
     public abstract void setSynced(MainSyncData data, boolean synced);
     public abstract Currency addCurrency(String name, String slug, float factor);
     public abstract MoneyAccount addAccount(String name, String slug, String currency, int balance);
+    public abstract void cleanDeleted();
+    public abstract List<MoneyRecord> getRecords();
+    public abstract void markAsDeleted(Currency c);
+    public abstract void markAsDeleted(MoneyAccount a);
+    public abstract void markAsDeleted(MoneyRecord d);
 }

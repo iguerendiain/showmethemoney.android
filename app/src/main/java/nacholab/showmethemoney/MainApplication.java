@@ -3,12 +3,13 @@ package nacholab.showmethemoney;
 import android.accounts.Account;
 import android.app.Application;
 
+import com.facebook.stetho.Stetho;
 import com.orm.SugarContext;
 
 import nacholab.showmethemoney.api.APIClient;
+import nacholab.showmethemoney.storage.ActiveAndroidDal;
 import nacholab.showmethemoney.storage.BaseDal;
 import nacholab.showmethemoney.storage.SettingsManager;
-import nacholab.showmethemoney.storage.SugarORMDal;
 import nacholab.showmethemoney.sync.SyncUtils;
 
 public class MainApplication extends Application{
@@ -22,9 +23,12 @@ public class MainApplication extends Application{
     public void onCreate() {
         super.onCreate();
 
+        Stetho.initializeWithDefaults(this);
+
         settings = new SettingsManager(this);
 
-        dal = new SugarORMDal(this);
+//        dal = new SugarORMDal(this);
+        dal = new ActiveAndroidDal(this);
 
         apiClient = new APIClient(this);
 

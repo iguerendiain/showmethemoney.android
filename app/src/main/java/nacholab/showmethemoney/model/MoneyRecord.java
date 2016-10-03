@@ -3,30 +3,58 @@ package nacholab.showmethemoney.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import com.activeandroid.annotation.Column;
+
 public class MoneyRecord extends DBModel {
 
     public enum Type{PATCH, EXPENSE, INCOME}
 
     @Expose
     @SerializedName("id")
+    @Column
     private int DBid;
 
     @Expose
+    @Column
     private String description;
 
     @Expose
+    @Column
     private String account;
 
-    @Expose
-    private String currency;
+    private MoneyAccount accountObject;
 
     @Expose
+    @Column
+    private String currency;
+
+    private Currency currencyObject;
+
+    @Expose
+    @Column
     private Type type;
 
     @Expose
+    @Column
     private int amount;
 
     public MoneyRecord() {
+    }
+
+    public MoneyAccount getAccountObject() {
+        return accountObject;
+    }
+
+    public void setAccountObject(MoneyAccount accountObject) {
+        this.accountObject = accountObject;
+    }
+
+    public Currency getCurrencyObject() {
+        return currencyObject;
+    }
+
+    public void setCurrencyObject(Currency currencyObject) {
+        this.currencyObject = currencyObject;
     }
 
     public int getDBid() {

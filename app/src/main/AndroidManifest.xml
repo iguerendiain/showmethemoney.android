@@ -15,6 +15,11 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
 
+        <meta-data android:name="AA_DB_NAME" android:value="aa_smtm.db" />
+        <meta-data android:name="AA_DB_VERSION" android:value="1" />
+        <meta-data android:name="AA_MODELS"
+                android:value="nacholab.showmethemoney.model.Currency,nacholab.showmethemoney.model.MoneyAccount,nacholab.showmethemoney.model.MoneyRecord" />
+
         <meta-data android:name="DATABASE" android:value="sugar_smtm.db" />
         <meta-data android:name="VERSION" android:value="2" />
         <meta-data android:name="QUERY_LOG" android:value="true" />
@@ -50,7 +55,7 @@
                 android:syncable="true"/>
 
         <activity
-                android:name=".ui.activity.TestActivity"
+                android:name=".ui.activity.MainActivity"
                 android:label="@string/app_name"
                 android:screenOrientation="userPortrait">
             <intent-filter>
@@ -63,6 +68,7 @@
         <activity android:name=".ui.activity.AddRecordActivity" android:screenOrientation="userPortrait" />
         <activity android:name=".ui.activity.AddAccountActivity" android:screenOrientation="userPortrait" />
         <activity android:name=".ui.activity.AddCurrencyActivity" android:screenOrientation="userPortrait" />
+        <activity android:name=".ui.activity.TestActivity" android:screenOrientation="userPortrait" />
 
     </application>
 

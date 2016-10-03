@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:padding="11dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/name"
+            android:text="Cuenta de cheques secreta de Suiza y Belice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:textSize="10sp"
+                android:id="@+id/slug"
+                android:text="cuenta_suiza_cheques"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="||"
+                android:layout_marginEnd="11dp"
+                android:layout_marginStart="11dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/currency"
+                android:textSize="10sp"
+                android:text="morlacos_purpura"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginStart="11dp"
+            android:layout_weight="0"
+            android:id="@+id/balance"
+            android:text="$133,42"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+</LinearLayout>

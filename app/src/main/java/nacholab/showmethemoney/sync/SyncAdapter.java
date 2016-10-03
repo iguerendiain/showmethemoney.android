@@ -25,6 +25,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             MainSyncData uploadPayload = app.getDal().buildUploadMainSyncData(app.getSettings().getLastSync());
             app.getApiClient().postMainSyncData(uploadPayload);
             app.getDal().setSynced(uploadPayload, true);
+            app.getDal().cleanDeleted();
             MainSyncData downloadPayload = app.getApiClient().getMainSyncData();
             app.getDal().saveOrUpdateMainSyncData(downloadPayload);
         } catch (IOException e) {

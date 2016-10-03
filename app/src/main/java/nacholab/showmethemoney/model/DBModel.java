@@ -1,10 +1,26 @@
 package nacholab.showmethemoney.model;
 
-import com.orm.SugarRecord;
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
 
-public abstract class DBModel extends SugarRecord{
+public abstract class DBModel extends Model/*SugarRecord*/{
+
+    @Column
     private boolean synced = true;
+
+    @Column
     private long lastSync;
+
+    @Column
+    private boolean deleted;
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
 
     public boolean isSynced() {
         return synced;

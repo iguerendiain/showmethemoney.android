@@ -1,0 +1,6 @@
+<resources>
+    <dimen name="toolbarHeight">56dp</dimen>
+    <dimen name="tabsHeight">56dp</dimen>
+    <dimen name="toolbarPlusTabsHeight">112dp</dimen>
+    <dimen name="toolbarTextSize">20sp</dimen>
+</resources>
