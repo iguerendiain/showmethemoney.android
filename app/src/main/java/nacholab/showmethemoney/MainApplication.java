@@ -9,6 +9,7 @@ import com.orm.SugarContext;
 import nacholab.showmethemoney.api.APIClient;
 import nacholab.showmethemoney.storage.ActiveAndroidDal;
 import nacholab.showmethemoney.storage.BaseDal;
+import nacholab.showmethemoney.storage.SessionManager;
 import nacholab.showmethemoney.storage.SettingsManager;
 import nacholab.showmethemoney.sync.SyncUtils;
 
@@ -18,6 +19,7 @@ public class MainApplication extends Application{
     private Account syncAccount;
     private BaseDal dal;
     private SettingsManager settings;
+    private SessionManager session;
 
     @Override
     public void onCreate() {
@@ -26,6 +28,7 @@ public class MainApplication extends Application{
         Stetho.initializeWithDefaults(this);
 
         settings = new SettingsManager(this);
+        session = new SessionManager(this);
 
 //        dal = new SugarORMDal(this);
         dal = new ActiveAndroidDal(this);
@@ -68,7 +71,7 @@ public class MainApplication extends Application{
         return settings;
     }
 
-    public void setSettings(SettingsManager settings) {
-        this.settings = settings;
+    public SessionManager getSession() {
+        return session;
     }
 }

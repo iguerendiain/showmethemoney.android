@@ -12,6 +12,7 @@ import nacholab.showmethemoney.MainApplication;
 import nacholab.showmethemoney.model.MainSyncData;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
+
     private final MainApplication app;
 
     public SyncAdapter(MainApplication _app) {

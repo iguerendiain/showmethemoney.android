@@ -19,7 +19,7 @@ import nacholab.showmethemoney.model.MoneyRecord;
 import nacholab.showmethemoney.ui.adapter.AccountSpinnerAdapter;
 import nacholab.showmethemoney.ui.adapter.CurrencySpinnerAdapter;
 
-public class AddAccountActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class AddAccountActivity extends AuthenticatedActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     @BindView(R.id.name)
     EditText name;

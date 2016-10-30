@@ -23,7 +23,7 @@ import nacholab.showmethemoney.ui.fragment.AccountsListFragment;
 import nacholab.showmethemoney.ui.fragment.CurrencyListFragment;
 import nacholab.showmethemoney.ui.fragment.RecordListFragment;
 
-public class MainActivity extends BaseActivity implements ViewPager.OnPageChangeListener, View.OnClickListener {
+public class MainActivity extends AuthenticatedActivity implements ViewPager.OnPageChangeListener, View.OnClickListener {
 
     private static final String FRAGMENT_TAG_RECORDS = "records";
     private static final String FRAGMENT_TAG_ACCOUNTS = "accounts";

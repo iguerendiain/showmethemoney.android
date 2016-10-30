@@ -19,7 +19,7 @@ import nacholab.showmethemoney.model.MoneyAccount;
 import nacholab.showmethemoney.model.MoneyRecord;
 import nacholab.showmethemoney.sync.SyncUtils;
 
-public class TestActivity extends BaseActivity implements View.OnClickListener {
+public class TestActivity extends AuthenticatedActivity implements View.OnClickListener {
 
     @BindView(R.id.syncNow)
     View syncNow;

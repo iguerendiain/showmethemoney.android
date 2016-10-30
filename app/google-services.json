@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "967046286641",
+    "firebase_url": "https://showmethemoney-9fda7.firebaseio.com",
+    "project_id": "showmethemoney-9fda7",
+    "storage_bucket": "showmethemoney-9fda7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967046286641:android:715b1e8ad85643be",
+        "android_client_info": {
+          "package_name": "nacholab.showmethemoney"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "967046286641-odleknnngj0vih8otkirjspsukfsptt3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "nacholab.showmethemoney",
+            "certificate_hash": "AB7E7A7D85DD9BF6303CE2A9C0EE6F71D37A6D20"
+          }
+        },
+        {
+          "client_id": "967046286641-3i98vd7a6c1r7282abna0v7uuq7iddps.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "nacholab.showmethemoney",
+            "certificate_hash": "CAED961AA3C8D64756786C5A4AA74FD34482C024"
+          }
+        },
+        {
+          "client_id": "967046286641-6cbt7t3cnshq50pqaii2q5sc3e1qpf8d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXOJPmxr0KHWb3K3zZRdGhnXkjMB6WLEk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "967046286641-6cbt7t3cnshq50pqaii2q5sc3e1qpf8d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

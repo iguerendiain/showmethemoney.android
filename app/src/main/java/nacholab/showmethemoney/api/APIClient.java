@@ -3,6 +3,7 @@ package nacholab.showmethemoney.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import android.provider.Settings;
 import android.util.Log;
 
 import java.io.IOException;
@@ -10,7 +11,9 @@ import java.io.IOException;
 import nacholab.showmethemoney.BuildConfig;
 import nacholab.showmethemoney.MainApplication;
 import nacholab.showmethemoney.model.MainSyncData;
+import nacholab.showmethemoney.model.Session;
 import okhttp3.OkHttpClient;
+import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -65,6 +68,22 @@ public class APIClient {
         } catch (IOException e) {
             handleIOException(e,"postMainSyncData");
         }
+    }
+
+    public Session createSessionWithGoogle(String googleToken) throws IOException {
+        try{
+            String androidInstallationID = Settings.Secure.getString(app.getContentResolver(), Settings.Secure.ANDROID_ID);
+            return apiCalls.createSessionWithGoogle(googleToken, androidInstallationID, "ANDROID").execute().body();
+        } catch (IOException e){
+            handleIOException(e, "createSessionWithGoogle");
+        }
+
+        return null;
+    }
+
+    public void createSessionWithGoogle(String googleToken, Callback<Session> cb){
+        String androidInstallationID = Settings.Secure.getString(app.getContentResolver(), Settings.Secure.ANDROID_ID);
+        apiCalls.createSessionWithGoogle(googleToken, androidInstallationID, "ANDROID").enqueue(cb);
     }
 
     private void handleIOException(IOException e, String source) throws IOException {

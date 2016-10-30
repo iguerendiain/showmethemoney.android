@@ -9,7 +9,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import nacholab.showmethemoney.R;
 
-public class AddCurrencyActivity extends BaseActivity implements View.OnClickListener{
+public class AddCurrencyActivity extends AuthenticatedActivity implements View.OnClickListener{
 
     @BindView(R.id.name)
     EditText name;
