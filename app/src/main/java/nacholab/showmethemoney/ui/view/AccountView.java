@@ -18,7 +18,6 @@ public class AccountView extends RelativeLayout implements View.OnLongClickListe
     }
 
     @BindView(R.id.name)TextView name;
-    @BindView(R.id.slug)TextView slug;
     @BindView(R.id.currency)TextView currency;
     @BindView(R.id.balance)TextView balance;
 
@@ -50,11 +49,6 @@ public class AccountView extends RelativeLayout implements View.OnLongClickListe
         init();
     }
 
-    public AccountView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init();
-    }
-
     private void init(){
         inflate(getContext(), R.layout.view_account_list_item, this);
         ButterKnife.bind(this);
@@ -68,8 +62,7 @@ public class AccountView extends RelativeLayout implements View.OnLongClickListe
     public void setAccount(MoneyAccount a){
         account = a;
         name.setText(a.getName());
-        slug.setText(a.getSlug());
-        currency.setText(a.getCurrency());
+        currency.setText(a.getCurrency().toString());
         balance.setText("$"+a.getBalance());
 
         if (!a.isSynced()){

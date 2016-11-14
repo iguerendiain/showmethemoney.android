@@ -69,21 +69,9 @@ public class APIClient {
             handleIOException(e,"postMainSyncData");
         }
     }
-
-    public Session createSessionWithGoogle(String googleToken) throws IOException {
-        try{
-            String androidInstallationID = Settings.Secure.getString(app.getContentResolver(), Settings.Secure.ANDROID_ID);
-            return apiCalls.createSessionWithGoogle(googleToken, androidInstallationID, "ANDROID").execute().body();
-        } catch (IOException e){
-            handleIOException(e, "createSessionWithGoogle");
-        }
-
-        return null;
-    }
-
     public void createSessionWithGoogle(String googleToken, Callback<Session> cb){
         String androidInstallationID = Settings.Secure.getString(app.getContentResolver(), Settings.Secure.ANDROID_ID);
-        apiCalls.createSessionWithGoogle(googleToken, androidInstallationID, "ANDROID").enqueue(cb);
+        apiCalls.createSessionWithGoogle(googleToken, androidInstallationID, "android").enqueue(cb);
     }
 
     private void handleIOException(IOException e, String source) throws IOException {

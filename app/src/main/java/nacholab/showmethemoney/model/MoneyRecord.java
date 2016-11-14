@@ -1,18 +1,12 @@
 package nacholab.showmethemoney.model;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 import com.activeandroid.annotation.Column;
 
 public class MoneyRecord extends DBModel {
 
-    public enum Type{PATCH, EXPENSE, INCOME}
-
-    @Expose
-    @SerializedName("id")
-    @Column
-    private int DBid;
+    public enum Type{patch, expense, income}
 
     @Expose
     @Column
@@ -20,19 +14,19 @@ public class MoneyRecord extends DBModel {
 
     @Expose
     @Column
-    private String account;
-
-    private MoneyAccount accountObject;
+    private Relation<MoneyAccount> account;
 
     @Expose
     @Column
-    private String currency;
-
-    private Currency currencyObject;
+    private Relation<Currency> currency;
 
     @Expose
     @Column
     private Type type;
+
+    @Expose
+    @Column
+    private long time;
 
     @Expose
     @Column
@@ -41,28 +35,28 @@ public class MoneyRecord extends DBModel {
     public MoneyRecord() {
     }
 
-    public MoneyAccount getAccountObject() {
-        return accountObject;
+    public Relation<MoneyAccount> getAccount() {
+        return account;
     }
 
-    public void setAccountObject(MoneyAccount accountObject) {
-        this.accountObject = accountObject;
+    public void setAccount(Relation<MoneyAccount> account) {
+        this.account = account;
     }
 
-    public Currency getCurrencyObject() {
-        return currencyObject;
+    public Relation<Currency> getCurrency() {
+        return currency;
     }
 
-    public void setCurrencyObject(Currency currencyObject) {
-        this.currencyObject = currencyObject;
+    public void setCurrency(Relation<Currency> currency) {
+        this.currency = currency;
     }
 
-    public int getDBid() {
-        return DBid;
+    public int getAmount() {
+        return amount;
     }
 
-    public void setDBid(int DBid) {
-        this.DBid = DBid;
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     public String getDescription() {
@@ -73,22 +67,6 @@ public class MoneyRecord extends DBModel {
         this.description = description;
     }
 
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
-
     public Type getType() {
         return type;
     }
@@ -97,12 +75,12 @@ public class MoneyRecord extends DBModel {
         this.type = type;
     }
 
-    public int getAmount() {
-        return amount;
+    public long getTime() {
+        return time;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
+    public void setTime(long time) {
+        this.time = time;
     }
 
     @Override

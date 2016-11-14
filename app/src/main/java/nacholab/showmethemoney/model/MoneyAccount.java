@@ -1,15 +1,10 @@
 package nacholab.showmethemoney.model;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 import com.activeandroid.annotation.Column;
 
 public class MoneyAccount extends DBModel {
-    @Expose
-    @SerializedName("id")
-    @Column
-    private int DBid;
 
     @Expose
     @Column
@@ -17,35 +12,13 @@ public class MoneyAccount extends DBModel {
 
     @Expose
     @Column
-    private String slug;
-
-    @Expose
-    @Column
-    private String currency;
-
-    private Currency currencyObject;
+    private Relation<Currency> currency;
 
     @Expose
     @Column
     private float balance;
 
     public MoneyAccount() {
-    }
-
-    public Currency getCurrencyObject() {
-        return currencyObject;
-    }
-
-    public void setCurrencyObject(Currency currencyObject) {
-        this.currencyObject = currencyObject;
-    }
-
-    public int getDBid() {
-        return DBid;
-    }
-
-    public void setDBid(int DBid) {
-        this.DBid = DBid;
     }
 
     public String getName() {
@@ -56,19 +29,11 @@ public class MoneyAccount extends DBModel {
         this.name = name;
     }
 
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
-    }
-
-    public String getCurrency() {
+    public Relation<Currency> getCurrency() {
         return currency;
     }
 
-    public void setCurrency(String currency) {
+    public void setCurrency(Relation<Currency> currency) {
         this.currency = currency;
     }
 

@@ -15,7 +15,7 @@ class LogInterceptor implements Interceptor {
 
     private final String logTag;
 
-    public LogInterceptor(String _logTag) {
+    LogInterceptor(String _logTag) {
         logTag = _logTag;
     }
 

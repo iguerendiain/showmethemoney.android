@@ -42,11 +42,6 @@ public class RecordView extends RelativeLayout implements View.OnLongClickListen
         init();
     }
 
-    public RecordView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init();
-    }
-
     private void init(){
         inflate(getContext(), R.layout.view_record_list_item, this);
         ButterKnife.bind(this);
@@ -59,13 +54,13 @@ public class RecordView extends RelativeLayout implements View.OnLongClickListen
         if (r.getType()!=null){
             type.setVisibility(VISIBLE);
             switch (r.getType()){
-                case EXPENSE:
+                case expense:
                     type.setImageResource(R.drawable.expense_minus_sign);
                     break;
-                case INCOME:
+                case income:
                     type.setImageResource(R.drawable.income_plus_sign);
                     break;
-                case PATCH:
+                case patch:
                     type.setImageResource(R.drawable.adjustment_pound_sign);
                     break;
             }
@@ -74,8 +69,8 @@ public class RecordView extends RelativeLayout implements View.OnLongClickListen
         }
 
         description.setText(r.getDescription());
-        account.setText(r.getAccount());
-        currency.setText(r.getCurrency());
+        account.setText(r.getAccount().toString());
+        currency.setText(r.getCurrency().toString());
         amount.setText("$"+r.getAmount());
 
         if (!r.isSynced()){

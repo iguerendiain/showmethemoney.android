@@ -67,10 +67,11 @@ public class AddRecordActivity extends AuthenticatedActivity implements View.OnC
             case R.id.createRecord:
                 getMainApp().getDal().addRecord(
                         Integer.parseInt(amount.getText().toString()),
-                        incomeSwitch.isChecked()? MoneyRecord.Type.INCOME: MoneyRecord.Type.EXPENSE,
+                        incomeSwitch.isChecked()? MoneyRecord.Type.income: MoneyRecord.Type.expense,
                         description.getText().toString(),
-                        currentAccount.getSlug(),
-                        currentCurrency.getSlug());
+                        currentAccount.getId(),
+                        currentCurrency.getId(),
+                        (long) (System.currentTimeMillis() / 1000f));
                 finish();
         }
     }

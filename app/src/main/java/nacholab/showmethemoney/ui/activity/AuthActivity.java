@@ -107,7 +107,7 @@ public class AuthActivity extends BaseActivity implements GoogleApiClient.OnConn
                         public void onResponse(Call<Session> call, Response<Session> response) {
                             if (response.code()==200) {
                                 Session session = response.body();
-                                getMainApp().getSession().setToken(session.getSessionId());
+                                getMainApp().getSession().setToken(session.getToken());
                                 goToMain();
                             }else{
                                 String error;

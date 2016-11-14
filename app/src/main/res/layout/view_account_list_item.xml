@@ -18,33 +18,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/currency"
+            android:textSize="10sp"
+            android:text="morlacos_purpura"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:textSize="10sp"
-                android:id="@+id/slug"
-                android:text="cuenta_suiza_cheques"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:text="||"
-                android:layout_marginEnd="11dp"
-                android:layout_marginStart="11dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/currency"
-                android:textSize="10sp"
-                android:text="morlacos_purpura"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-
-        </LinearLayout>
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

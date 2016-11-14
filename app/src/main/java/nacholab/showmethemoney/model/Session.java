@@ -5,13 +5,13 @@ import com.google.gson.annotations.Expose;
 public class Session extends BaseModel{
 
     @Expose
-    private String sessionId;
+    private String token;
 
-    public String getSessionId() {
-        return sessionId;
+    public String getToken() {
+        return token;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setToken(String token) {
+        this.token = token;
     }
 }

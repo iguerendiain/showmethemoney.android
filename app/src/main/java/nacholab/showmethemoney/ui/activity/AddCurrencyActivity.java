@@ -14,9 +14,6 @@ public class AddCurrencyActivity extends AuthenticatedActivity implements View.O
     @BindView(R.id.name)
     EditText name;
 
-    @BindView(R.id.slug)
-    EditText slug;
-
     @BindView(R.id.factor)
     EditText factor;
 
@@ -37,7 +34,6 @@ public class AddCurrencyActivity extends AuthenticatedActivity implements View.O
             case R.id.createCurrency:
                 getMainApp().getDal().addCurrency(
                         name.getText().toString(),
-                        slug.getText().toString(),
                         Float.parseFloat(factor.getText().toString())
                 );
                 finish();

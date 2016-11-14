@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Cache;
+import com.activeandroid.Configuration;
 import com.activeandroid.Model;
 import com.activeandroid.TableInfo;
 import com.activeandroid.query.Delete;
@@ -15,6 +16,7 @@ import nacholab.showmethemoney.model.Currency;
 import nacholab.showmethemoney.model.MainSyncData;
 import nacholab.showmethemoney.model.MoneyAccount;
 import nacholab.showmethemoney.model.MoneyRecord;
+import nacholab.showmethemoney.model.Relation;
 
 public class ActiveAndroidDal extends BaseDal{
 
@@ -26,7 +28,9 @@ public class ActiveAndroidDal extends BaseDal{
     private static final String FALSE = "0";
 
     public ActiveAndroidDal(Context context) {
-        ActiveAndroid.initialize(context);
+        Configuration.Builder configurationBuilder = new Configuration.Builder(context);
+        configurationBuilder.addTypeSerializer(RelationSerializer.class);
+        ActiveAndroid.initialize(configurationBuilder.create(), true);
     }
 
     private static void truncate(Class<? extends Model> type){
@@ -91,14 +95,15 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
-    public MoneyRecord addRecord(int amount, MoneyRecord.Type type, String description, String account, String currency) {
+    public MoneyRecord addRecord(int amount, MoneyRecord.Type type, String description, long account, long currency, long time) {
         MoneyRecord record = new MoneyRecord();
         record.setType(type);
         record.setAmount(amount);
         record.setDescription(description);
-        record.setAccount(account);
-        record.setCurrency(currency);
+        record.setAccount(new Relation<MoneyAccount>(null, -1, account));
+        record.setCurrency(new Relation<Currency>(null, -1, currency));
         record.setSynced(false);
+        record.setTime(time);
         record.save();
         return record;
     }
@@ -162,10 +167,9 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
-    public Currency addCurrency(String name, String slug, float factor) {
+    public Currency addCurrency(String name, float factor) {
         Currency currency = new Currency();
         currency.setName(name);
-        currency.setSlug(slug);
         currency.setFactor(factor);
         currency.setSynced(false);
         currency.save();
@@ -173,11 +177,10 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
-    public MoneyAccount addAccount(String name, String slug, String currency, int balance) {
+    public MoneyAccount addAccount(String name, long currency, int balance) {
         MoneyAccount account = new MoneyAccount();
         account.setName(name);
-        account.setSlug(slug);
-        account.setCurrency(currency);
+        account.setCurrency(new Relation<Currency>(null, -1, currency));
         account.setBalance(balance);
         account.setSynced(false);
         account.save();

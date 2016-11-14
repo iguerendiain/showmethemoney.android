@@ -18,7 +18,7 @@ interface APICalls {
     Call<Void> postMainSync(@Body MainSyncData data);
 
     @FormUrlEncoded
-    @POST("/createSessionWithGoogle")
+    @POST("/sessionFromGoogle")
     Call<Session> createSessionWithGoogle(@Field("googleToken") String googleToken, @Field("clientId") String clientId, @Field("clientType") String clientType);
 
 }

@@ -1,9 +1,12 @@
 package nacholab.showmethemoney.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 
-public abstract class DBModel extends Model/*SugarRecord*/{
+public abstract class DBModel extends Model{
 
     @Column
     private boolean synced = true;
@@ -13,6 +16,11 @@ public abstract class DBModel extends Model/*SugarRecord*/{
 
     @Column
     private boolean deleted;
+
+    @Column
+    @Expose
+    @SerializedName("id")
+    private int remoteId;
 
     public boolean isDeleted() {
         return deleted;
@@ -36,5 +44,13 @@ public abstract class DBModel extends Model/*SugarRecord*/{
 
     public void setLastSync(long lastSync) {
         this.lastSync = lastSync;
+    }
+
+    public int getRemoteId() {
+        return remoteId;
+    }
+
+    public void setRemoteId(int remoteId) {
+        this.remoteId = remoteId;
     }
 }

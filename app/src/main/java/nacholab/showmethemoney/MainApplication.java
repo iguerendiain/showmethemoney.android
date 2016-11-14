@@ -4,7 +4,6 @@ import android.accounts.Account;
 import android.app.Application;
 
 import com.facebook.stetho.Stetho;
-import com.orm.SugarContext;
 
 import nacholab.showmethemoney.api.APIClient;
 import nacholab.showmethemoney.storage.ActiveAndroidDal;
@@ -51,12 +50,6 @@ public class MainApplication extends Application{
 
     public APIClient getApiClient() {
         return apiClient;
-    }
-
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-        SugarContext.terminate();
     }
 
     public Account getSyncAccount() {

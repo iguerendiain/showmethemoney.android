@@ -46,7 +46,7 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
 
     // Storage
-    compile 'com.github.satyan:sugar:1.5'
+//    compile 'com.github.satyan:sugar:1.5'
     compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
 
     // Butterknife

@@ -18,7 +18,6 @@ public class CurrencyView extends RelativeLayout implements View.OnLongClickList
     }
 
     @BindView(R.id.name)TextView name;
-    @BindView(R.id.slug)TextView slug;
     @BindView(R.id.factor)TextView factor;
 
     private Listener listener;
@@ -49,11 +48,6 @@ public class CurrencyView extends RelativeLayout implements View.OnLongClickList
         init();
     }
 
-    public CurrencyView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init();
-    }
-
     private void init(){
         inflate(getContext(), R.layout.view_currency_list_item, this);
         ButterKnife.bind(this);
@@ -67,7 +61,6 @@ public class CurrencyView extends RelativeLayout implements View.OnLongClickList
     public void setCurrency(Currency c){
         currency = c;
         name.setText(c.getName());
-        slug.setText(c.getSlug());
         factor.setText("x"+c.getFactor());
 
         if (!c.isSynced()){

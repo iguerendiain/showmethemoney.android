@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Switch;
 
 import java.util.List;
 
@@ -14,18 +13,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import nacholab.showmethemoney.R;
 import nacholab.showmethemoney.model.Currency;
-import nacholab.showmethemoney.model.MoneyAccount;
-import nacholab.showmethemoney.model.MoneyRecord;
-import nacholab.showmethemoney.ui.adapter.AccountSpinnerAdapter;
 import nacholab.showmethemoney.ui.adapter.CurrencySpinnerAdapter;
 
 public class AddAccountActivity extends AuthenticatedActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     @BindView(R.id.name)
     EditText name;
-
-    @BindView(R.id.slug)
-    EditText slug;
 
     @BindView(R.id.balance)
     EditText balance;
@@ -58,8 +51,7 @@ public class AddAccountActivity extends AuthenticatedActivity implements View.On
             case R.id.createAccount:
                 getMainApp().getDal().addAccount(
                         name.getText().toString(),
-                        slug.getText().toString(),
-                        currentCurrency.getSlug(),
+                        currentCurrency.getId(),
                         Integer.parseInt(balance.getText().toString())
                 );
                 finish();
