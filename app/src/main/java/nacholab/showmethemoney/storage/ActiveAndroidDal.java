@@ -16,7 +16,8 @@ import nacholab.showmethemoney.model.Currency;
 import nacholab.showmethemoney.model.MainSyncData;
 import nacholab.showmethemoney.model.MoneyAccount;
 import nacholab.showmethemoney.model.MoneyRecord;
-import nacholab.showmethemoney.model.Relation;
+import nacholab.showmethemoney.model.RelationAccount;
+import nacholab.showmethemoney.model.RelationCurrency;
 
 public class ActiveAndroidDal extends BaseDal{
 
@@ -29,7 +30,8 @@ public class ActiveAndroidDal extends BaseDal{
 
     public ActiveAndroidDal(Context context) {
         Configuration.Builder configurationBuilder = new Configuration.Builder(context);
-        configurationBuilder.addTypeSerializer(RelationSerializer.class);
+        configurationBuilder.addTypeSerializer(RelationAccountSerializer.class);
+        configurationBuilder.addTypeSerializer(RelationCurrencySerializer.class);
         ActiveAndroid.initialize(configurationBuilder.create(), true);
     }
 
@@ -100,8 +102,8 @@ public class ActiveAndroidDal extends BaseDal{
         record.setType(type);
         record.setAmount(amount);
         record.setDescription(description);
-        record.setAccount(new Relation<MoneyAccount>(null, -1, account));
-        record.setCurrency(new Relation<Currency>(null, -1, currency));
+        record.setAccount(new RelationAccount(null, -1, account));
+        record.setCurrency(new RelationCurrency(null, -1, currency));
         record.setSynced(false);
         record.setTime(time);
         record.save();
@@ -117,6 +119,15 @@ public class ActiveAndroidDal extends BaseDal{
         List<MoneyRecord> recordsToDelete = new Select().from(MoneyRecord.class).where(WHERE_SYNCED_AND_DELETED, FALSE, TRUE).execute();
         List<MoneyAccount> accountsToDelete = new Select().from(MoneyAccount.class).where(WHERE_SYNCED_AND_DELETED, FALSE, TRUE).execute();
         List<Currency> currenciesToDelete = new Select().from(Currency.class).where(WHERE_SYNCED_AND_DELETED, FALSE, TRUE).execute();
+
+        for (MoneyAccount acc : accounts){
+            acc.updateLocalId();
+        }
+
+        for (Currency cur : currencies){
+            cur.updateLocalId();
+        }
+
         data.setRecords(records);
         data.setCurrencies(currencies);
         data.setAccounts(accounts);
@@ -180,7 +191,7 @@ public class ActiveAndroidDal extends BaseDal{
     public MoneyAccount addAccount(String name, long currency, int balance) {
         MoneyAccount account = new MoneyAccount();
         account.setName(name);
-        account.setCurrency(new Relation<Currency>(null, -1, currency));
+        account.setCurrency(new RelationCurrency(null, -1, currency));
         account.setBalance(balance);
         account.setSynced(false);
         account.save();

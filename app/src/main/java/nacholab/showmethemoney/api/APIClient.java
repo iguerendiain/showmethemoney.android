@@ -2,15 +2,22 @@ package nacholab.showmethemoney.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import android.provider.Settings;
 import android.util.Log;
+
+import com.activeandroid.Model;
 
 import java.io.IOException;
 
 import nacholab.showmethemoney.BuildConfig;
 import nacholab.showmethemoney.MainApplication;
 import nacholab.showmethemoney.model.MainSyncData;
+import nacholab.showmethemoney.model.MoneyAccount;
+import nacholab.showmethemoney.model.Relation;
+import nacholab.showmethemoney.model.RelationAccount;
+import nacholab.showmethemoney.model.RelationCurrency;
 import nacholab.showmethemoney.model.Session;
 import okhttp3.OkHttpClient;
 import retrofit2.Callback;
@@ -33,6 +40,8 @@ public class APIClient {
 
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()
+                    .registerTypeAdapter(RelationCurrency.class, new RelationTypeAdapter())
+                    .registerTypeAdapter(RelationAccount.class, new RelationTypeAdapter())
                     .create();
 
             OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();

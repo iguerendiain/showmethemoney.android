@@ -22,6 +22,13 @@ public abstract class DBModel extends Model{
     @SerializedName("id")
     private int remoteId;
 
+    @Expose
+    private long localId;
+
+    public void updateLocalId(){
+        localId = getId();
+    }
+
     public boolean isDeleted() {
         return deleted;
     }

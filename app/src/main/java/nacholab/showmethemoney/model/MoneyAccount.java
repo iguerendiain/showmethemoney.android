@@ -12,7 +12,7 @@ public class MoneyAccount extends DBModel {
 
     @Expose
     @Column
-    private Relation<Currency> currency;
+    private RelationCurrency currency;
 
     @Expose
     @Column
@@ -29,11 +29,11 @@ public class MoneyAccount extends DBModel {
         this.name = name;
     }
 
-    public Relation<Currency> getCurrency() {
+    public RelationCurrency getCurrency() {
         return currency;
     }
 
-    public void setCurrency(Relation<Currency> currency) {
+    public void setCurrency(RelationCurrency currency) {
         this.currency = currency;
     }
 

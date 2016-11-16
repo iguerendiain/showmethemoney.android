@@ -3,12 +3,13 @@ package nacholab.showmethemoney.storage;
 import com.activeandroid.serializer.TypeSerializer;
 
 import nacholab.showmethemoney.model.Relation;
+import nacholab.showmethemoney.model.RelationAccount;
 
-public class RelationSerializer extends TypeSerializer {
+public class RelationAccountSerializer extends TypeSerializer {
 
     @Override
     public Class<?> getDeserializedType() {
-        return Relation.class;
+        return RelationAccount.class;
     }
 
     @Override
@@ -23,6 +24,6 @@ public class RelationSerializer extends TypeSerializer {
 
     @Override
     public Relation deserialize(Object data) {
-        return new Relation(null, -1, (long)data);
+        return new RelationAccount(null, -1, (long)data);
     }
 }
