@@ -69,8 +69,8 @@ public class AddRecordActivity extends AuthenticatedActivity implements View.OnC
                         Integer.parseInt(amount.getText().toString()),
                         incomeSwitch.isChecked()? MoneyRecord.Type.income: MoneyRecord.Type.expense,
                         description.getText().toString(),
-                        currentAccount.getId(),
-                        currentCurrency.getId(),
+                        currentAccount.getUuid(),
+                        currentCurrency.getUuid(),
                         (long) (System.currentTimeMillis() / 1000f));
                 finish();
         }

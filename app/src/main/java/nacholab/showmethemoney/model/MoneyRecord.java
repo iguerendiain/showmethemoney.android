@@ -14,11 +14,11 @@ public class MoneyRecord extends DBModel {
 
     @Expose
     @Column
-    private RelationAccount account;
+    private String account;
 
     @Expose
     @Column
-    private RelationCurrency currency;
+    private String currency;
 
     @Expose
     @Column
@@ -35,19 +35,19 @@ public class MoneyRecord extends DBModel {
     public MoneyRecord() {
     }
 
-    public Relation<MoneyAccount> getAccount() {
+    public String getAccount() {
         return account;
     }
 
-    public void setAccount(RelationAccount account) {
+    public void setAccount(String account) {
         this.account = account;
     }
 
-    public RelationCurrency getCurrency() {
+    public String getCurrency() {
         return currency;
     }
 
-    public void setCurrency(RelationCurrency currency) {
+    public void setCurrency(String currency) {
         this.currency = currency;
     }
 

@@ -3,8 +3,10 @@ package nacholab.showmethemoney.model;
 import com.google.gson.annotations.Expose;
 
 import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
 
 public class Currency extends DBModel {
+
     @Expose
     @Column
     private String name;

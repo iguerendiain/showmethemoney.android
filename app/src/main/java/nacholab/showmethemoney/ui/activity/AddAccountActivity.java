@@ -51,7 +51,7 @@ public class AddAccountActivity extends AuthenticatedActivity implements View.On
             case R.id.createAccount:
                 getMainApp().getDal().addAccount(
                         name.getText().toString(),
-                        currentCurrency.getId(),
+                        currentCurrency.getUuid(),
                         Integer.parseInt(balance.getText().toString())
                 );
                 finish();

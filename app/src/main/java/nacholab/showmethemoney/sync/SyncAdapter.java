@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import java.io.IOException;
 
+import nacholab.showmethemoney.BuildConfig;
 import nacholab.showmethemoney.MainApplication;
 import nacholab.showmethemoney.model.MainSyncData;
 
@@ -22,6 +23,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle bundle, String s, ContentProviderClient contentProviderClient, SyncResult syncResult) {
+        if (BuildConfig.DEBUG) {
+//            android.os.Debug.waitForDebugger();
+        }
+
         try {
             MainSyncData uploadPayload = app.getDal().buildUploadMainSyncData(app.getSettings().getLastSync());
             app.getApiClient().postMainSyncData(uploadPayload);

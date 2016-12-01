@@ -1,7 +1,6 @@
 package nacholab.showmethemoney.model;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -19,15 +18,7 @@ public abstract class DBModel extends Model{
 
     @Column
     @Expose
-    @SerializedName("id")
-    private int remoteId;
-
-    @Expose
-    private long localId;
-
-    public void updateLocalId(){
-        localId = getId();
-    }
+    private String uuid;
 
     public boolean isDeleted() {
         return deleted;
@@ -53,11 +44,11 @@ public abstract class DBModel extends Model{
         this.lastSync = lastSync;
     }
 
-    public int getRemoteId() {
-        return remoteId;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setRemoteId(int remoteId) {
-        this.remoteId = remoteId;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

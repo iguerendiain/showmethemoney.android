@@ -6,4 +6,8 @@ public class StringUtils {
         return text==null || text.trim().isEmpty();
     }
 
+    public static boolean isNotBlank(String text){
+        return text!=null && !text.trim().isEmpty();
+    }
+
 }

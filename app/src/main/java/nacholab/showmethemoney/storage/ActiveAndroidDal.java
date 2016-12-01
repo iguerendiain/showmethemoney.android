@@ -16,8 +16,6 @@ import nacholab.showmethemoney.model.Currency;
 import nacholab.showmethemoney.model.MainSyncData;
 import nacholab.showmethemoney.model.MoneyAccount;
 import nacholab.showmethemoney.model.MoneyRecord;
-import nacholab.showmethemoney.model.RelationAccount;
-import nacholab.showmethemoney.model.RelationCurrency;
 
 public class ActiveAndroidDal extends BaseDal{
 
@@ -30,8 +28,6 @@ public class ActiveAndroidDal extends BaseDal{
 
     public ActiveAndroidDal(Context context) {
         Configuration.Builder configurationBuilder = new Configuration.Builder(context);
-        configurationBuilder.addTypeSerializer(RelationAccountSerializer.class);
-        configurationBuilder.addTypeSerializer(RelationCurrencySerializer.class);
         ActiveAndroid.initialize(configurationBuilder.create(), true);
     }
 
@@ -43,10 +39,6 @@ public class ActiveAndroidDal extends BaseDal{
 
     @Override
     public void saveOrUpdateMainSyncData(MainSyncData data) {
-        truncate(MoneyRecord.class);
-        truncate(Currency.class);
-        truncate(MoneyAccount.class);
-
         List<Currency> currencies= data.getCurrencies();
         List<MoneyAccount> accounts = data.getAccounts();
         List<MoneyRecord> records = data.getRecords();
@@ -62,6 +54,10 @@ public class ActiveAndroidDal extends BaseDal{
         if (currenciesCount>0 || accountsCount>0 || recordsCount>0) {
             ActiveAndroid.beginTransaction();
             try {
+                truncate(MoneyRecord.class);
+                truncate(Currency.class);
+                truncate(MoneyAccount.class);
+
                 if (currenciesCount>0)for (Currency c : currencies) {
                     c.save();
                 }
@@ -97,13 +93,14 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
-    public MoneyRecord addRecord(int amount, MoneyRecord.Type type, String description, long account, long currency, long time) {
+    public MoneyRecord addRecord(int amount, MoneyRecord.Type type, String description, String account, String currency, long time) {
         MoneyRecord record = new MoneyRecord();
+        record.setUuid(BaseDal.buildId());
         record.setType(type);
         record.setAmount(amount);
         record.setDescription(description);
-        record.setAccount(new RelationAccount(null, -1, account));
-        record.setCurrency(new RelationCurrency(null, -1, currency));
+        record.setAccount(account);
+        record.setCurrency(currency);
         record.setSynced(false);
         record.setTime(time);
         record.save();
@@ -119,15 +116,6 @@ public class ActiveAndroidDal extends BaseDal{
         List<MoneyRecord> recordsToDelete = new Select().from(MoneyRecord.class).where(WHERE_SYNCED_AND_DELETED, FALSE, TRUE).execute();
         List<MoneyAccount> accountsToDelete = new Select().from(MoneyAccount.class).where(WHERE_SYNCED_AND_DELETED, FALSE, TRUE).execute();
         List<Currency> currenciesToDelete = new Select().from(Currency.class).where(WHERE_SYNCED_AND_DELETED, FALSE, TRUE).execute();
-
-        for (MoneyAccount acc : accounts){
-            acc.updateLocalId();
-        }
-
-        for (Currency cur : currencies){
-            cur.updateLocalId();
-        }
-
         data.setRecords(records);
         data.setCurrencies(currencies);
         data.setAccounts(accounts);
@@ -180,6 +168,7 @@ public class ActiveAndroidDal extends BaseDal{
     @Override
     public Currency addCurrency(String name, float factor) {
         Currency currency = new Currency();
+        currency.setUuid(BaseDal.buildId());
         currency.setName(name);
         currency.setFactor(factor);
         currency.setSynced(false);
@@ -188,10 +177,11 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
-    public MoneyAccount addAccount(String name, long currency, int balance) {
+    public MoneyAccount addAccount(String name, String currency, int balance) {
         MoneyAccount account = new MoneyAccount();
+        account.setUuid(BaseDal.buildId());
         account.setName(name);
-        account.setCurrency(new RelationCurrency(null, -1, currency));
+        account.setCurrency(currency);
         account.setBalance(balance);
         account.setSynced(false);
         account.save();

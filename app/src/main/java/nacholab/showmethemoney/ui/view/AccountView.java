@@ -62,7 +62,7 @@ public class AccountView extends RelativeLayout implements View.OnLongClickListe
     public void setAccount(MoneyAccount a){
         account = a;
         name.setText(a.getName());
-        currency.setText(a.getCurrency().toString());
+        currency.setText(a.getCurrency());
         balance.setText("$"+a.getBalance());
 
         if (!a.isSynced()){
