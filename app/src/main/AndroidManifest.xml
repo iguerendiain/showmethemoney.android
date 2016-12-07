@@ -64,9 +64,20 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.AddRecordActivity" android:screenOrientation="userPortrait" />
+        <activity
+                android:name=".ui.activity.AddRecordActivity"
+                android:taskAffinity="nacholab.showmethemoney.AddRecordTask"
+                android:screenOrientation="userPortrait"
+                android:label="@string/launcher_add_record">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".ui.activity.AddAccountActivity" android:screenOrientation="userPortrait" />
-        <activity android:name=".ui.activity.AddCurrencyActivity" android:screenOrientation="userPortrait" />
+        <activity android:name=".ui.activity.AddEditCurrencyActivity" android:screenOrientation="userPortrait" />
         <activity android:name=".ui.activity.AuthActivity" android:screenOrientation="userPortrait" />
 
     </application>

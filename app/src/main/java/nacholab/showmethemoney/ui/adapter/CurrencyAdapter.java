@@ -1,6 +1,7 @@
 package nacholab.showmethemoney.ui.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
@@ -12,17 +13,14 @@ import nacholab.showmethemoney.ui.view.CurrencyView;
 public class CurrencyAdapter extends RecyclerView.Adapter{
 
     private List<Currency> currencies;
-    private CurrencyView.Listener listener;
 
-    public CurrencyAdapter(CurrencyView.Listener _listener) {
+    public CurrencyAdapter() {
         currencies = new ArrayList<>();
-        listener = _listener;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CurrencyView v = new CurrencyView(parent.getContext());
-        v.setListener(listener);
         return new CurrencyViewHolder(v);
     }
 

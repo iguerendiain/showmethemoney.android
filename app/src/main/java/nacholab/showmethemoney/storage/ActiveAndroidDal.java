@@ -25,6 +25,8 @@ public class ActiveAndroidDal extends BaseDal{
     private static final String WHERE_DELETED = DELETED+"=?";
     private static final String TRUE = "1";
     private static final String FALSE = "0";
+    private static final String WHERE_CURRENCY = "currency = ?";
+    private static final String WHERE_UUID = "uuid = ?";
 
     public ActiveAndroidDal(Context context) {
         Configuration.Builder configurationBuilder = new Configuration.Builder(context);
@@ -83,13 +85,38 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
+    public MoneyAccount getAccountByUUID(String uuid) {
+        return new Select().from(MoneyAccount.class).where(WHERE_DELETED, FALSE).where(WHERE_UUID, uuid).executeSingle();
+    }
+
+    @Override
+    public List<MoneyAccount> getAccountsByCurrency(Currency c) {
+        return new Select().from(MoneyAccount.class).where(WHERE_DELETED, FALSE).where(WHERE_CURRENCY, c.getUuid()).execute();
+    }
+
+    @Override
     public List<Currency> getCurrencies() {
         return new Select().from(Currency.class).where(WHERE_DELETED, FALSE).execute();
     }
 
     @Override
+    public Currency getCurrencyByUUID(String uuid) {
+        return new Select().from(Currency.class).where(WHERE_DELETED, FALSE).where(WHERE_UUID, uuid).executeSingle();
+    }
+
+    @Override
     public List<MoneyRecord> getRecords() {
         return new Select().from(MoneyRecord.class).where(WHERE_DELETED, FALSE).execute();
+    }
+
+    @Override
+    public List<MoneyRecord> getRecordsByCurrency(Currency c) {
+        return new Select().from(MoneyRecord.class).where(WHERE_DELETED, FALSE).where(WHERE_CURRENCY, c.getUuid()).execute();
+    }
+
+    @Override
+    public MoneyRecord getRecordByUUID(String uuid) {
+        return new Select().from(MoneyRecord.class).where(WHERE_DELETED, FALSE).where(WHERE_UUID, uuid).executeSingle();
     }
 
     @Override
@@ -166,10 +193,12 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
-    public Currency addCurrency(String name, float factor) {
+    public Currency addCurrency(String name, String symbol, String code, float factor) {
         Currency currency = new Currency();
         currency.setUuid(BaseDal.buildId());
         currency.setName(name);
+        currency.setSymbol(symbol);
+        currency.setCode(code);
         currency.setFactor(factor);
         currency.setSynced(false);
         currency.save();

@@ -13,13 +13,10 @@ import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import nacholab.showmethemoney.R;
-import nacholab.showmethemoney.model.Currency;
-import nacholab.showmethemoney.ui.activity.AddCurrencyActivity;
+import nacholab.showmethemoney.ui.activity.AddEditCurrencyActivity;
 import nacholab.showmethemoney.ui.adapter.CurrencyAdapter;
-import nacholab.showmethemoney.ui.view.CurrencyView;
-import nacholab.showmethemoney.utils.DialogHelper;
 
-public class CurrencyListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, CurrencyView.Listener{
+public class CurrencyListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener{
 
     @BindView(R.id.list)RecyclerView list;
     @BindView(R.id.add)View add;
@@ -39,7 +36,7 @@ public class CurrencyListFragment extends BaseFragment implements SwipeRefreshLa
         ButterKnife.bind(this, view);
         add.setOnClickListener(this);
         refresh.setOnRefreshListener(this);
-        adapter = new CurrencyAdapter(this);
+        adapter = new CurrencyAdapter();
         list.setLayoutManager(new LinearLayoutManager(getActivity()));
         list.setAdapter(adapter);
         refreshFromDB();
@@ -59,7 +56,7 @@ public class CurrencyListFragment extends BaseFragment implements SwipeRefreshLa
     }
 
     private void addNew(){
-        Intent i = new Intent(getActivity(), AddCurrencyActivity.class);
+        Intent i = new Intent(getActivity(), AddEditCurrencyActivity.class);
         startActivity(i);
     }
 
@@ -69,22 +66,4 @@ public class CurrencyListFragment extends BaseFragment implements SwipeRefreshLa
         adapter.notifyDataSetChanged();
         refresh.setRefreshing(false);
     }
-
-    @Override
-    public void onDelete(final Currency c) {
-        DialogHelper.showConfirmationDialog(getContext(), getString(R.string.sure_to_delete_currency), new DialogHelper.ConfirmationListener() {
-            @Override
-            public void onConfirmationDialogYes() {
-                getMainApp().getDal().markAsDeleted(c);
-                adapter.remove(c);
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onConfirmationDialogNo() {
-
-            }
-        });
-    }
-
 }

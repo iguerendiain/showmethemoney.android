@@ -15,7 +15,31 @@ public class Currency extends DBModel {
     @Column
     private float factor;
 
+    @Expose
+    @Column
+    private String symbol;
+
+    @Expose
+    @Column
+    private String code;
+
     public Currency() {
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getName() {

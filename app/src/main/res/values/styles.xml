@@ -1,8 +1,54 @@
 <resources>
+
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorAccent">@color/accent</item>
+    </style>
+
+    <style name="toolbar">
+        <item name="android:background">@color/primary</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/toolbarHeight</item>
+    </style>
+    <style name="toolbar_title">
+        <item name="android:layout_marginStart">@dimen/toolbarHeight</item>
+        <item name="android:textSize">@dimen/toolbarTextSize</item>
+        <item name="android:textColor">@color/icons</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentStart">true</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="toolbar_actions_container">
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+    <style name="toolbar_action">
+        <item name="android:padding">11dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="below_toolbar">
+           <item name="android:layout_marginTop">@dimen/toolbarHeight</item>
+    </style>
+    <style name="form_field_title">
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="form_field_input">
+        <item name="android:textSize">22sp</item>
+        <item name="android:layout_marginBottom">36dp</item>
+        <item name="android:textColorHint">@color/primaryLight</item>
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
 </resources>
