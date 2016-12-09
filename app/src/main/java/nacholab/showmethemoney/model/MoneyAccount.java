@@ -18,7 +18,17 @@ public class MoneyAccount extends DBModel {
     @Column
     private float balance;
 
+    private Currency currencyObject;
+
     public MoneyAccount() {
+    }
+
+    public Currency getCurrencyObject() {
+        return currencyObject;
+    }
+
+    public void setCurrencyObject(Currency currencyObject) {
+        this.currencyObject = currencyObject;
     }
 
     public String getName() {

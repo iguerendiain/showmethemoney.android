@@ -10,7 +10,7 @@ import nacholab.showmethemoney.model.MoneyRecord;
 
 public abstract class BaseDal {
     public abstract void saveOrUpdateMainSyncData(MainSyncData data);
-    public abstract List<MoneyAccount> getAccounts();
+    public abstract List<MoneyAccount> getAccounts(boolean populateCurrencies);
     public abstract MoneyAccount getAccountByUUID(String uuid);
     public abstract List<MoneyAccount> getAccountsByCurrency(Currency c);
     public abstract List<Currency> getCurrencies();
@@ -31,4 +31,9 @@ public abstract class BaseDal {
     static String buildId(){
         return UUID.randomUUID().toString();
     }
+
+    public List<MoneyAccount> getAccounts(){
+        return getAccounts(false);
+    }
+
 }

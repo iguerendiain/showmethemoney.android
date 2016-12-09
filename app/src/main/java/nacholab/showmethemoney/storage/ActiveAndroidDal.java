@@ -1,6 +1,7 @@
 package nacholab.showmethemoney.storage;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Cache;
@@ -10,6 +11,7 @@ import com.activeandroid.TableInfo;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nacholab.showmethemoney.model.Currency;
@@ -19,14 +21,22 @@ import nacholab.showmethemoney.model.MoneyRecord;
 
 public class ActiveAndroidDal extends BaseDal{
 
+    private static final String LAST_SYNC = "lastSync";
+    private static final String UUID = "uuid";
+    private static final String BALANCE = "balance";
+    private static final String CURRENCY = "currency";
+    private static final String NAME = "name";
+    private static final String CODE = "code";
+    private static final String FACTOR = "factor";
+    private static final String SYMBOL = "symbol";
     private static final String SYNCED = "synced";
     private static final String DELETED = "deleted";
     private static final String WHERE_SYNCED_AND_DELETED = SYNCED+"=? and "+DELETED+"=?";
     private static final String WHERE_DELETED = DELETED+"=?";
     private static final String TRUE = "1";
     private static final String FALSE = "0";
-    private static final String WHERE_CURRENCY = "currency = ?";
-    private static final String WHERE_UUID = "uuid = ?";
+    private static final String WHERE_CURRENCY = CURRENCY+" = ?";
+    private static final String WHERE_UUID = UUID+" = ?";
 
     public ActiveAndroidDal(Context context) {
         Configuration.Builder configurationBuilder = new Configuration.Builder(context);
@@ -80,8 +90,46 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
-    public List<MoneyAccount> getAccounts() {
-        return new Select().from(MoneyAccount.class).where(WHERE_DELETED, FALSE).execute();
+    public List<MoneyAccount> getAccounts(boolean populateCurrencies) {
+        if (populateCurrencies){
+            String query =
+                "select a.*, c."+CODE+", c."+FACTOR+", c."+NAME+" as "+CURRENCY+"_"+NAME+", c."+SYMBOL+" " +
+                "from "+Cache.getTableInfo(MoneyAccount.class).getTableName()+" a "+
+                "left join "+Cache.getTableInfo(Currency.class).getTableName()+" c on a."+CURRENCY+"= c."+UUID+" " +
+                "where a."+DELETED+" = 0";
+
+            Cursor accountXcurrency = ActiveAndroid.getDatabase().rawQuery(query, null);
+
+            List<MoneyAccount> accounts = new ArrayList<>();
+            while (accountXcurrency.moveToNext()){
+                MoneyAccount account = new MoneyAccount();
+                Currency currency = new Currency();
+
+                account.setDeleted(accountXcurrency.getInt(accountXcurrency.getColumnIndex(DELETED))!=0);
+                account.setLastSync(accountXcurrency.getLong(accountXcurrency.getColumnIndex(LAST_SYNC)));
+                account.setSynced(accountXcurrency.getInt(accountXcurrency.getColumnIndex(SYNCED))!=0);
+                account.setUuid(accountXcurrency.getString(accountXcurrency.getColumnIndex(UUID)));
+                account.setBalance(accountXcurrency.getFloat(accountXcurrency.getColumnIndex(BALANCE)));
+                account.setCurrency(accountXcurrency.getString(accountXcurrency.getColumnIndex(CURRENCY)));
+                account.setName(accountXcurrency.getString(accountXcurrency.getColumnIndex(NAME)));
+
+                currency.setName(accountXcurrency.getString(accountXcurrency.getColumnIndex(CURRENCY+"_"+NAME)));
+                currency.setUuid(accountXcurrency.getString(accountXcurrency.getColumnIndex(CURRENCY)));
+                currency.setCode(accountXcurrency.getString(accountXcurrency.getColumnIndex(CODE)));
+                currency.setFactor(accountXcurrency.getFloat(accountXcurrency.getColumnIndex(FACTOR)));
+                currency.setSymbol(accountXcurrency.getString(accountXcurrency.getColumnIndex(SYMBOL)));
+
+                account.setCurrencyObject(currency);
+
+                accounts.add(account);
+            }
+
+            accountXcurrency.close();
+
+            return accounts;
+        }else {
+            return new Select().from(MoneyAccount.class).where(WHERE_DELETED, FALSE).execute();
+        }
     }
 
     @Override

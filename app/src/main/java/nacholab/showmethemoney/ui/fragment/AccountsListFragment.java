@@ -65,7 +65,7 @@ public class AccountsListFragment extends BaseFragment implements SwipeRefreshLa
 
     private void refreshFromDB(){
         adapter.clear();
-        adapter.add(getMainApp().getDal().getAccounts());
+        adapter.add(getMainApp().getDal().getAccounts(true));
         adapter.notifyDataSetChanged();
         refresh.setRefreshing(false);
     }

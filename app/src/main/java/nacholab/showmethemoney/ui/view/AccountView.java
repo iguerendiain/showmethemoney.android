@@ -10,6 +10,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import nacholab.showmethemoney.R;
 import nacholab.showmethemoney.model.MoneyAccount;
+import nacholab.showmethemoney.utils.StringUtils;
 
 public class AccountView extends RelativeLayout implements View.OnLongClickListener {
 
@@ -62,8 +63,8 @@ public class AccountView extends RelativeLayout implements View.OnLongClickListe
     public void setAccount(MoneyAccount a){
         account = a;
         name.setText(a.getName());
-        currency.setText(a.getCurrency());
-        balance.setText("$"+a.getBalance());
+        currency.setText(a.getCurrencyObject().toString());
+        balance.setText(StringUtils.formatLocalized(getContext(), "%s%f", a.getCurrencyObject().getSymbol(), a.getBalance()));
 
         if (!a.isSynced()){
             setBackgroundResource(R.color.accent);
