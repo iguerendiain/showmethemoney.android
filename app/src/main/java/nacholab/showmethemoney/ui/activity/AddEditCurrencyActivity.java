@@ -107,6 +107,7 @@ public class AddEditCurrencyActivity extends AuthenticatedActivity implements Vi
                     );
                 }
                 finish();
+                break;
             case R.id.delete:
                 DialogHelper.showConfirmationDialog(this, getString(R.string.sure_to_delete_currency), new DialogHelper.ConfirmationListener() {
                     @Override
