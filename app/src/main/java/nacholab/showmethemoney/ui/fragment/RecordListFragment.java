@@ -14,7 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import nacholab.showmethemoney.R;
 import nacholab.showmethemoney.model.MoneyRecord;
-import nacholab.showmethemoney.ui.activity.AddRecordActivity;
+import nacholab.showmethemoney.ui.activity.AddEditRecordActivity;
 import nacholab.showmethemoney.ui.adapter.RecordAdapter;
 import nacholab.showmethemoney.ui.view.RecordView;
 import nacholab.showmethemoney.utils.DialogHelper;
@@ -59,7 +59,7 @@ public class RecordListFragment extends BaseFragment implements SwipeRefreshLayo
     }
 
     private void addNew(){
-        Intent i = new Intent(getActivity(), AddRecordActivity.class);
+        Intent i = new Intent(getActivity(), AddEditRecordActivity.class);
         startActivity(i);
     }
 

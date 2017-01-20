@@ -36,7 +36,7 @@
         </activity>
 
         <activity
-                android:name=".ui.activity.AddRecordActivity"
+                android:name=".ui.activity.AddEditRecordActivity"
                 android:taskAffinity="nacholab.showmethemoney.AddRecordTask"
                 android:screenOrientation="userPortrait"
                 android:label="@string/launcher_add_record">

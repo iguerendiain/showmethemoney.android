@@ -19,7 +19,7 @@ import nacholab.showmethemoney.model.MoneyRecord;
 import nacholab.showmethemoney.ui.adapter.AccountSpinnerAdapter;
 import nacholab.showmethemoney.ui.adapter.CurrencySpinnerAdapter;
 
-public class AddRecordActivity extends AuthenticatedActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class AddEditRecordActivity extends AuthenticatedActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     @BindView(R.id.accounts)
     Spinner accounts;
@@ -62,7 +62,7 @@ public class AddRecordActivity extends AuthenticatedActivity implements View.OnC
     }
 
     private void setAccount(int idx){
-        currentAccount = dbAccounts.get(0);
+        currentAccount = dbAccounts.get(idx);
         accounts.setSelection(idx);
         String currencyCode = currentAccount.getCurrency();
         for (int c=0; c<dbCurrencies.size(); c++){
