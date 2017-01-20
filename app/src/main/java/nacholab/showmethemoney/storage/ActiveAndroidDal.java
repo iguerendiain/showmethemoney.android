@@ -89,7 +89,7 @@ public class ActiveAndroidDal extends BaseDal{
                 "select a.*, c."+CODE+", c."+FACTOR+", c."+NAME+" as "+CURRENCY+"_"+NAME+", c."+SYMBOL+" " +
                 "from "+Cache.getTableInfo(MoneyAccount.class).getTableName()+" a "+
                 "left join "+Cache.getTableInfo(Currency.class).getTableName()+" c on a."+CURRENCY+"= c."+CODE+" " +
-                "where a."+DELETED+" = 0";
+                "where a."+DELETED+" = 0 order by a."+NAME;
 
             Cursor accountXcurrency = ActiveAndroid.getDatabase().rawQuery(query, null);
 

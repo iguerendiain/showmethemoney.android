@@ -11,7 +11,7 @@ public class MainSyncJob extends JobService implements MainSyncTask.Listener {
 
     @Override
     public boolean onStartJob(JobParameters params) {
-        task = new MainSyncTask(this, this);
+        task = new MainSyncTask(getApplicationContext(), this);
         task.execute();
         return true;
     }

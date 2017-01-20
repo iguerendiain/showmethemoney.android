@@ -4,10 +4,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import java.io.IOException;
-import java.util.List;
 
 import nacholab.showmethemoney.MainApplication;
-import nacholab.showmethemoney.model.Currency;
 import nacholab.showmethemoney.model.MainSyncData;
 
 public class MainSyncTask extends AsyncTask<Void, Void, Void>{

@@ -14,7 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import nacholab.showmethemoney.R;
 import nacholab.showmethemoney.model.MoneyAccount;
-import nacholab.showmethemoney.ui.activity.AddAccountActivity;
+import nacholab.showmethemoney.ui.activity.AddEditAccountActivity;
 import nacholab.showmethemoney.ui.adapter.AccountAdapter;
 import nacholab.showmethemoney.ui.view.AccountView;
 import nacholab.showmethemoney.utils.DialogHelper;
@@ -59,7 +59,7 @@ public class AccountsListFragment extends BaseFragment implements SwipeRefreshLa
     }
 
     private void addNew(){
-        Intent i = new Intent(getActivity(), AddAccountActivity.class);
+        Intent i = new Intent(getActivity(), AddEditAccountActivity.class);
         startActivity(i);
     }
 
@@ -85,5 +85,12 @@ public class AccountsListFragment extends BaseFragment implements SwipeRefreshLa
 
             }
         });
+    }
+
+    @Override
+    public void onOpen(MoneyAccount a) {
+        Intent i = new Intent(getActivity(), AddEditAccountActivity.class);
+        i.putExtra(AddEditAccountActivity.ACCOUNT_UUID, a.getUuid());
+        startActivity(i);
     }
 }

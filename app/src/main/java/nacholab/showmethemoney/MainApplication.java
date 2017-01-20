@@ -37,7 +37,7 @@ public class MainApplication extends Application{
         dal = new ActiveAndroidDal(this);
         apiClient = new APIClient(this);
 
-        scheduleCurrencyUpdate();
+//        scheduleCurrencyUpdate();
         scheduleMainSync();
 
         // Update all on start

@@ -47,7 +47,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.AddAccountActivity" android:screenOrientation="userPortrait" />
+        <activity android:name=".ui.activity.AddEditAccountActivity" android:screenOrientation="userPortrait" />
         <activity android:name=".ui.activity.AuthActivity" android:screenOrientation="userPortrait" />
     </application>
 

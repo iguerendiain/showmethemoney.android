@@ -11,7 +11,7 @@ public class CurrencyUpdaterJob extends JobService implements CurrencyUpdaterTas
 
     @Override
     public boolean onStartJob(JobParameters params) {
-        task = new CurrencyUpdaterTask(this, this);
+        task = new CurrencyUpdaterTask(getApplicationContext(), this);
         task.execute();
         return true;
     }
