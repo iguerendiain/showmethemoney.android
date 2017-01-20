@@ -16,7 +16,7 @@ public class MoneyAccount extends DBModel {
 
     @Expose
     @Column
-    private float balance;
+    private int balance;
 
     private Currency currencyObject;
 
@@ -47,11 +47,11 @@ public class MoneyAccount extends DBModel {
         this.currency = currency;
     }
 
-    public float getBalance() {
+    public int getBalance() {
         return balance;
     }
 
-    public void setBalance(float balance) {
+    public void setBalance(int balance) {
         this.balance = balance;
     }
 

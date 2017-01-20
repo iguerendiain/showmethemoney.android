@@ -1,5 +1,8 @@
 package nacholab.showmethemoney.api;
 
+import java.util.List;
+
+import nacholab.showmethemoney.model.Currency;
 import nacholab.showmethemoney.model.MainSyncData;
 import nacholab.showmethemoney.model.Session;
 import retrofit2.Call;
@@ -20,5 +23,8 @@ interface APICalls {
     @FormUrlEncoded
     @POST("/sessionFromGoogle")
     Call<Session> createSessionWithGoogle(@Field("googleToken") String googleToken, @Field("clientId") String clientId, @Field("clientType") String clientType);
+
+    @GET("/currency")
+    Call<List<Currency>> getCurrency();
 
 }

@@ -44,6 +44,7 @@ public class AddRecordActivity extends AuthenticatedActivity implements View.OnC
 
     private MoneyAccount currentAccount;
     private Currency currentCurrency;
+    private Currency accountCurrency;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,21 +58,44 @@ public class AddRecordActivity extends AuthenticatedActivity implements View.OnC
         accounts.setOnItemSelectedListener(this);
         currencies.setOnItemSelectedListener(this);
         createRecord.setOnClickListener(this);
+        setAccount(0);
+    }
+
+    private void setAccount(int idx){
         currentAccount = dbAccounts.get(0);
-        currentCurrency = dbCurrencies.get(0);
+        accounts.setSelection(idx);
+        String currencyCode = currentAccount.getCurrency();
+        for (int c=0; c<dbCurrencies.size(); c++){
+            if (dbCurrencies.get(c).getCode().equals(currencyCode)){
+                currencies.setSelection(c);
+                currentCurrency = dbCurrencies.get(c);
+                accountCurrency = dbCurrencies.get(c);
+                break;
+            }
+        }
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.createRecord:
+                int writtenAmount = (int) Math.floor(Integer.parseInt(amount.getText().toString())*100);
+                int realAmount;
+
+                if (currentCurrency.getCode().equals(currentAccount.getCurrency())){
+                    realAmount = writtenAmount;
+                }else{
+                    realAmount = (int) Math.floor(writtenAmount * (accountCurrency.getFactor() / currentCurrency.getFactor()));
+                }
+
                 getMainApp().getDal().addRecord(
-                        Integer.parseInt(amount.getText().toString()),
+                        (int) Math.floor(realAmount),
                         incomeSwitch.isChecked()? MoneyRecord.Type.income: MoneyRecord.Type.expense,
                         description.getText().toString(),
                         currentAccount.getUuid(),
-                        currentCurrency.getUuid(),
-                        (long) (System.currentTimeMillis() / 1000f));
+                        currentCurrency.getCode(),
+                        (long) (System.currentTimeMillis() / 1000f),
+                        true);
                 finish();
         }
     }
@@ -80,7 +104,7 @@ public class AddRecordActivity extends AuthenticatedActivity implements View.OnC
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         switch (adapterView.getId()){
             case R.id.accounts:
-                currentAccount = dbAccounts.get(i);
+                setAccount(i);
                 break;
             case R.id.currencies:
                 currentCurrency = dbCurrencies.get(i);

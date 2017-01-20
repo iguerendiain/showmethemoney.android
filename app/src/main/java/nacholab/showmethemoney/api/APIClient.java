@@ -7,15 +7,15 @@ import android.provider.Settings;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.List;
 
 import nacholab.showmethemoney.BuildConfig;
 import nacholab.showmethemoney.MainApplication;
+import nacholab.showmethemoney.model.Currency;
 import nacholab.showmethemoney.model.MainSyncData;
 import nacholab.showmethemoney.model.Session;
 import okhttp3.OkHttpClient;
-import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -43,9 +43,9 @@ public class APIClient {
             authInterceptor = new AuthInterceptor(app);
             okHttpClientBuilder.addInterceptor(authInterceptor);
 
-//            if (BuildConfig.DEBUG) {
-//                okHttpClientBuilder.addInterceptor(new LogInterceptor(TAG));
-//            }
+            if (BuildConfig.DEBUG) {
+                okHttpClientBuilder.addInterceptor(new LogInterceptor(TAG));
+            }
 
             OkHttpClient okHttpClient = okHttpClientBuilder.build();
 
@@ -79,6 +79,15 @@ public class APIClient {
     public void createSessionWithGoogle(String googleToken, final Callback<Session> cb){
         String androidInstallationID = Settings.Secure.getString(app.getContentResolver(), Settings.Secure.ANDROID_ID);
         apiCalls.createSessionWithGoogle(googleToken, androidInstallationID, "android").enqueue(cb);
+    }
+
+    public List<Currency> getCurrency() throws IOException {
+        try{
+            return apiCalls.getCurrency().execute().body();
+        } catch (IOException e){
+            handleIOException(e, "getCurrency");
+            return null;
+        }
     }
 
     private void handleIOException(IOException e, String source) throws IOException {

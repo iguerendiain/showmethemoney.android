@@ -64,7 +64,7 @@ public class AccountView extends RelativeLayout implements View.OnLongClickListe
         account = a;
         name.setText(a.getName());
         currency.setText(a.getCurrencyObject().toString());
-        balance.setText(StringUtils.formatLocalized(getContext(), "%s%f", a.getCurrencyObject().getSymbol(), a.getBalance()));
+        balance.setText(StringUtils.formatLocalized(getContext(), "%s%f", a.getCurrencyObject().getSymbol(), a.getBalance()/100f));
 
         if (!a.isSynced()){
             setBackgroundResource(R.color.accent);

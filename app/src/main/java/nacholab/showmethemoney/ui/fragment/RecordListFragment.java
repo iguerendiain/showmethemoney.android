@@ -75,7 +75,7 @@ public class RecordListFragment extends BaseFragment implements SwipeRefreshLayo
         DialogHelper.showConfirmationDialog(getContext(), getString(R.string.sure_to_delete_record), new DialogHelper.ConfirmationListener() {
             @Override
             public void onConfirmationDialogYes() {
-                getMainApp().getDal().markAsDeleted(r);
+                getMainApp().getDal().markAsDeleted(r, true);
                 adapter.remove(r);
                 adapter.notifyDataSetChanged();
             }

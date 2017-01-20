@@ -4,8 +4,6 @@
 
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
 
     <application
             android:name=".MainApplication"
@@ -23,35 +21,8 @@
         <meta-data android:name="VERSION" android:value="2" />
         <meta-data android:name="QUERY_LOG" android:value="true" />
 
-        <service android:name=".sync.SyncAuthService">
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator"/>
-            </intent-filter>
-
-            <meta-data
-                    android:name="android.accounts.AccountAuthenticator"
-                    android:resource="@xml/authenticator"/>
-        </service>
-
-        <service
-                android:name=".sync.SyncService"
-                android:exported="true"
-                android:process=":sync">
-
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter"/>
-            </intent-filter>
-
-            <meta-data
-                    android:name="android.content.SyncAdapter"
-                    android:resource="@xml/syncadapter"/>
-        </service>
-
-        <provider
-                android:name=".sync.SyncContentProvider"
-                android:authorities="nacholab.showmethemoney.provider"
-                android:exported="false"
-                android:syncable="true"/>
+        <service android:name=".sync.CurrencyUpdaterJob" android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service android:name=".sync.MainSyncJob" android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity
                 android:name=".ui.activity.MainActivity"
@@ -77,9 +48,7 @@
         </activity>
 
         <activity android:name=".ui.activity.AddAccountActivity" android:screenOrientation="userPortrait" />
-        <activity android:name=".ui.activity.AddEditCurrencyActivity" android:screenOrientation="userPortrait" />
         <activity android:name=".ui.activity.AuthActivity" android:screenOrientation="userPortrait" />
-
     </application>
 
 </manifest>

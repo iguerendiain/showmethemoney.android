@@ -18,16 +18,14 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import nacholab.showmethemoney.R;
-import nacholab.showmethemoney.sync.SyncUtils;
+import nacholab.showmethemoney.sync.MainSyncTask;
 import nacholab.showmethemoney.ui.fragment.AccountsListFragment;
-import nacholab.showmethemoney.ui.fragment.CurrencyListFragment;
 import nacholab.showmethemoney.ui.fragment.RecordListFragment;
 
 public class MainActivity extends AuthenticatedActivity implements ViewPager.OnPageChangeListener, View.OnClickListener {
 
     private static final String FRAGMENT_TAG_RECORDS = "records";
     private static final String FRAGMENT_TAG_ACCOUNTS = "accounts";
-    private static final String FRAGMENT_TAG_CURRENCIES = "currencies";
 
     @BindView(R.id.tabs)SmartTabLayout tabs;
     @BindView(R.id.panes)ViewPager panes;
@@ -56,7 +54,6 @@ public class MainActivity extends AuthenticatedActivity implements ViewPager.OnP
 
         paneItemsCreator.add(FRAGMENT_TAG_RECORDS, RecordListFragment.class);
         paneItemsCreator.add(FRAGMENT_TAG_ACCOUNTS, AccountsListFragment.class);
-        paneItemsCreator.add(FRAGMENT_TAG_CURRENCIES, CurrencyListFragment.class);
 
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(getSupportFragmentManager(), paneItemsCreator.create());
 
@@ -75,7 +72,6 @@ public class MainActivity extends AuthenticatedActivity implements ViewPager.OnP
 
         ((ImageView) tabs.getTabAt(0)).setImageResource(R.drawable.ic_action_action_view_list);
         ((ImageView) tabs.getTabAt(1)).setImageResource(R.drawable.ic_action_action_account_balance);
-        ((ImageView) tabs.getTabAt(2)).setImageResource(R.drawable.ic_action_editor_attach_money);
 
         tabs.setOnPageChangeListener(this);
     }
@@ -93,9 +89,6 @@ public class MainActivity extends AuthenticatedActivity implements ViewPager.OnP
                 return;
             case 1:
                 title.setText(R.string.accounts);
-                return;
-            case 2:
-                title.setText(R.string.currencies);
         }
     }
 
@@ -113,10 +106,6 @@ public class MainActivity extends AuthenticatedActivity implements ViewPager.OnP
     }
 
     private void backendSync(){
-        Bundle settingsBundle = new Bundle();
-        settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        ContentResolver.requestSync(getMainApp().getSyncAccount(), SyncUtils.AUTHORITY, settingsBundle);
-
+        new MainSyncTask(this, null).execute();
     }
 }

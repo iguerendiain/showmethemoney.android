@@ -67,4 +67,11 @@ public class Currency extends DBModel {
         return render;
 
     }
+
+    public void update(Currency currency) {
+        name = currency.name;
+        factor = currency.factor;
+        code = currency.code;
+        symbol = currency.symbol;
+    }
 }

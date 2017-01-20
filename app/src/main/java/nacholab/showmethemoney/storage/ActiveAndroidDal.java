@@ -37,6 +37,7 @@ public class ActiveAndroidDal extends BaseDal{
     private static final String FALSE = "0";
     private static final String WHERE_CURRENCY = CURRENCY+" = ?";
     private static final String WHERE_UUID = UUID+" = ?";
+    private static final String WHERE_CODE = CODE+" = ?";
 
     public ActiveAndroidDal(Context context) {
         Configuration.Builder configurationBuilder = new Configuration.Builder(context);
@@ -51,28 +52,20 @@ public class ActiveAndroidDal extends BaseDal{
 
     @Override
     public void saveOrUpdateMainSyncData(MainSyncData data) {
-        List<Currency> currencies= data.getCurrencies();
         List<MoneyAccount> accounts = data.getAccounts();
         List<MoneyRecord> records = data.getRecords();
 
-        int currenciesCount = 0;
         int accountsCount = 0;
         int recordsCount = 0;
 
-        if (currencies!=null)currenciesCount = currencies.size();
         if (accounts!=null)accountsCount = accounts.size();
         if (records!=null)recordsCount = records.size();
 
-        if (currenciesCount>0 || accountsCount>0 || recordsCount>0) {
+        if (accountsCount>0 || recordsCount>0) {
             ActiveAndroid.beginTransaction();
             try {
                 truncate(MoneyRecord.class);
-                truncate(Currency.class);
                 truncate(MoneyAccount.class);
-
-                if (currenciesCount>0)for (Currency c : currencies) {
-                    c.save();
-                }
 
                 if (accountsCount>0)for (MoneyAccount a : accounts) {
                     a.save();
@@ -95,7 +88,7 @@ public class ActiveAndroidDal extends BaseDal{
             String query =
                 "select a.*, c."+CODE+", c."+FACTOR+", c."+NAME+" as "+CURRENCY+"_"+NAME+", c."+SYMBOL+" " +
                 "from "+Cache.getTableInfo(MoneyAccount.class).getTableName()+" a "+
-                "left join "+Cache.getTableInfo(Currency.class).getTableName()+" c on a."+CURRENCY+"= c."+UUID+" " +
+                "left join "+Cache.getTableInfo(Currency.class).getTableName()+" c on a."+CURRENCY+"= c."+CODE+" " +
                 "where a."+DELETED+" = 0";
 
             Cursor accountXcurrency = ActiveAndroid.getDatabase().rawQuery(query, null);
@@ -109,7 +102,7 @@ public class ActiveAndroidDal extends BaseDal{
                 account.setLastSync(accountXcurrency.getLong(accountXcurrency.getColumnIndex(LAST_SYNC)));
                 account.setSynced(accountXcurrency.getInt(accountXcurrency.getColumnIndex(SYNCED))!=0);
                 account.setUuid(accountXcurrency.getString(accountXcurrency.getColumnIndex(UUID)));
-                account.setBalance(accountXcurrency.getFloat(accountXcurrency.getColumnIndex(BALANCE)));
+                account.setBalance(accountXcurrency.getInt(accountXcurrency.getColumnIndex(BALANCE)));
                 account.setCurrency(accountXcurrency.getString(accountXcurrency.getColumnIndex(CURRENCY)));
                 account.setName(accountXcurrency.getString(accountXcurrency.getColumnIndex(NAME)));
 
@@ -139,7 +132,7 @@ public class ActiveAndroidDal extends BaseDal{
 
     @Override
     public List<MoneyAccount> getAccountsByCurrency(Currency c) {
-        return new Select().from(MoneyAccount.class).where(WHERE_DELETED, FALSE).where(WHERE_CURRENCY, c.getUuid()).execute();
+        return new Select().from(MoneyAccount.class).where(WHERE_DELETED, FALSE).where(WHERE_CURRENCY, c.getCode()).execute();
     }
 
     @Override
@@ -159,7 +152,7 @@ public class ActiveAndroidDal extends BaseDal{
 
     @Override
     public List<MoneyRecord> getRecordsByCurrency(Currency c) {
-        return new Select().from(MoneyRecord.class).where(WHERE_DELETED, FALSE).where(WHERE_CURRENCY, c.getUuid()).execute();
+        return new Select().from(MoneyRecord.class).where(WHERE_DELETED, FALSE).where(WHERE_CURRENCY, c.getCode()).execute();
     }
 
     @Override
@@ -168,17 +161,29 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
-    public MoneyRecord addRecord(int amount, MoneyRecord.Type type, String description, String account, String currency, long time) {
+    public MoneyRecord addRecord(int absAmount, MoneyRecord.Type type, String description, String account, String currency, long time, boolean updateAccountBalance) {
         MoneyRecord record = new MoneyRecord();
         record.setUuid(BaseDal.buildId());
         record.setType(type);
-        record.setAmount(amount);
+        if (type == MoneyRecord.Type.income) {
+            record.setAmount(absAmount);
+        }else{
+            record.setAmount(-absAmount);
+        }
         record.setDescription(description);
         record.setAccount(account);
         record.setCurrency(currency);
         record.setSynced(false);
         record.setTime(time);
         record.save();
+
+        if (updateAccountBalance){
+            MoneyAccount dbAccount = getAccountByUUID(record.getAccount());
+            dbAccount.setBalance(dbAccount.getBalance() + record.getAmount());
+            dbAccount.setSynced(false);
+            dbAccount.save();
+        }
+
         return record;
     }
 
@@ -187,15 +192,11 @@ public class ActiveAndroidDal extends BaseDal{
         MainSyncData data = new MainSyncData();
         List<MoneyRecord> records = new Select().from(MoneyRecord.class).where(WHERE_SYNCED_AND_DELETED, FALSE, FALSE).execute();
         List<MoneyAccount> accounts = new Select().from(MoneyAccount.class).where(WHERE_SYNCED_AND_DELETED, FALSE, FALSE).execute();
-        List<Currency> currencies = new Select().from(Currency.class).where(WHERE_SYNCED_AND_DELETED, FALSE, FALSE).execute();
         List<MoneyRecord> recordsToDelete = new Select().from(MoneyRecord.class).where(WHERE_SYNCED_AND_DELETED, FALSE, TRUE).execute();
         List<MoneyAccount> accountsToDelete = new Select().from(MoneyAccount.class).where(WHERE_SYNCED_AND_DELETED, FALSE, TRUE).execute();
-        List<Currency> currenciesToDelete = new Select().from(Currency.class).where(WHERE_SYNCED_AND_DELETED, FALSE, TRUE).execute();
         data.setRecords(records);
-        data.setCurrencies(currencies);
         data.setAccounts(accounts);
         data.setRecordsToDelete(recordsToDelete);
-        data.setCurrenciesToDelete(currenciesToDelete);
         data.setAccountsToDelete(accountsToDelete);
         return data;
     }
@@ -204,13 +205,11 @@ public class ActiveAndroidDal extends BaseDal{
     public void setSynced(MainSyncData data, boolean synced) {
         int recordsCount = 0;
         int accountsCount = 0;
-        int currenciesCount = 0;
 
         if (data.getRecords()!=null)recordsCount = data.getRecords().size();
         if (data.getAccounts()!=null)accountsCount = data.getAccounts().size();
-        if (data.getCurrencies()!=null)currenciesCount = data.getCurrencies().size();
 
-        if (recordsCount>0||accountsCount>0||currenciesCount>0) {
+        if (recordsCount>0||accountsCount>0) {
             ActiveAndroid.beginTransaction();
             try {
                 if (recordsCount > 0) {
@@ -227,30 +226,11 @@ public class ActiveAndroidDal extends BaseDal{
                     }
                 }
 
-                if (currenciesCount > 0) {
-                    for (Currency c : data.getCurrencies()) {
-                        c.setSynced(synced);
-                        c.save();
-                    }
-                }
                 ActiveAndroid.setTransactionSuccessful();
             } finally {
                 ActiveAndroid.endTransaction();
             }
         }
-    }
-
-    @Override
-    public Currency addCurrency(String name, String symbol, String code, float factor) {
-        Currency currency = new Currency();
-        currency.setUuid(BaseDal.buildId());
-        currency.setName(name);
-        currency.setSymbol(symbol);
-        currency.setCode(code);
-        currency.setFactor(factor);
-        currency.setSynced(false);
-        currency.save();
-        return currency;
     }
 
     @Override
@@ -269,14 +249,6 @@ public class ActiveAndroidDal extends BaseDal{
     public void cleanDeleted() {
         new Delete().from(MoneyRecord.class).where(WHERE_DELETED,TRUE).execute();
         new Delete().from(MoneyAccount.class).where(WHERE_DELETED,TRUE).execute();
-        new Delete().from(Currency.class).where(WHERE_DELETED,TRUE).execute();
-    }
-
-    @Override
-    public void markAsDeleted(Currency c) {
-        c.setSynced(false);
-        c.setDeleted(true);
-        c.save();
     }
 
     @Override
@@ -287,9 +259,34 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
-    public void markAsDeleted(MoneyRecord d) {
+    public void markAsDeleted(MoneyRecord d, boolean updateAccountBalance) {
         d.setSynced(false);
         d.setDeleted(true);
         d.save();
+
+        if (updateAccountBalance){
+            MoneyAccount dbAccount = getAccountByUUID(d.getAccount());
+            dbAccount.setBalance(dbAccount.getBalance() - d.getAmount());
+            dbAccount.setSynced(false);
+            dbAccount.save();
+        }
+    }
+
+    @Override
+    public void saveOrUpdateCurrency(List<Currency> currencies) {
+        for (Currency currency : currencies){
+            Currency dbCurrency = getCurrencyByCode(currency.getCode());
+            if (dbCurrency==null){
+                currency.save();
+            }else{
+                dbCurrency.update(currency);
+                dbCurrency.save();
+            }
+        }
+    }
+
+    @Override
+    public Currency getCurrencyByCode(String code) {
+        return new Select().from(Currency.class).where(WHERE_DELETED, FALSE).where(WHERE_CODE, code).executeSingle();
     }
 }

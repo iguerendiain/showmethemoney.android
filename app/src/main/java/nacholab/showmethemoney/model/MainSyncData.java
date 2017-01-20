@@ -10,16 +10,10 @@ public class MainSyncData extends BaseModel {
     private List<MoneyAccount> accounts;
 
     @Expose
-    private List<Currency> currencies;
-
-    @Expose
     private List<MoneyRecord> records;
 
     @Expose
     private List<MoneyAccount> accountsToDelete;
-
-    @Expose
-    private List<Currency> currenciesToDelete;
 
     @Expose
     private List<MoneyRecord> recordsToDelete;
@@ -33,14 +27,6 @@ public class MainSyncData extends BaseModel {
 
     public void setAccountsToDelete(List<MoneyAccount> accountsToDelete) {
         this.accountsToDelete = accountsToDelete;
-    }
-
-    public List<Currency> getCurrenciesToDelete() {
-        return currenciesToDelete;
-    }
-
-    public void setCurrenciesToDelete(List<Currency> currenciesToDelete) {
-        this.currenciesToDelete = currenciesToDelete;
     }
 
     public List<MoneyRecord> getRecordsToDelete() {
@@ -59,14 +45,6 @@ public class MainSyncData extends BaseModel {
         this.accounts = accounts;
     }
 
-    public List<Currency> getCurrencies() {
-        return currencies;
-    }
-
-    public void setCurrencies(List<Currency> currencies) {
-        this.currencies = currencies;
-    }
-
     public List<MoneyRecord> getRecords() {
         return records;
     }
@@ -79,10 +57,8 @@ public class MainSyncData extends BaseModel {
     public String toString() {
         return  "{\n"+
                 "\taccounts=["+accounts+"]\n"+
-                "\tcurrencies=["+currencies+"]\n" +
                 "\trecords=["+records+"]\n" +
                 "\taccountsToDelete=["+accountsToDelete+"]\n"+
-                "\tcurrenciesToDelete=["+currenciesToDelete+"]\n" +
                 "\trecordsToDelete=["+recordsToDelete+"]\n" +
                 "}";
     }

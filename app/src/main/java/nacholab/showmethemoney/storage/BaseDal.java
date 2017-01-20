@@ -15,18 +15,18 @@ public abstract class BaseDal {
     public abstract List<MoneyAccount> getAccountsByCurrency(Currency c);
     public abstract List<Currency> getCurrencies();
     public abstract Currency getCurrencyByUUID(String uuid);
-    public abstract MoneyRecord addRecord(int amount, MoneyRecord.Type type, String description, String account, String currency, long time);
+    public abstract MoneyRecord addRecord(int amount, MoneyRecord.Type type, String description, String account, String currency, long time, boolean updateAccountBalance);
     public abstract MainSyncData buildUploadMainSyncData(long lastSync);
     public abstract void setSynced(MainSyncData data, boolean synced);
-    public abstract Currency addCurrency(String name, String symbol, String code, float factor);
     public abstract MoneyAccount addAccount(String name, String currency, int balance);
     public abstract void cleanDeleted();
     public abstract List<MoneyRecord> getRecords();
     public abstract List<MoneyRecord> getRecordsByCurrency(Currency c);
     public abstract MoneyRecord getRecordByUUID(String uuid);
-    public abstract void markAsDeleted(Currency c);
     public abstract void markAsDeleted(MoneyAccount a);
-    public abstract void markAsDeleted(MoneyRecord d);
+    public abstract void markAsDeleted(MoneyRecord d, boolean updateAccountBalance);
+    public abstract void saveOrUpdateCurrency(List<Currency> currencies);
+    public abstract Currency getCurrencyByCode(String code);
 
     static String buildId(){
         return UUID.randomUUID().toString();
