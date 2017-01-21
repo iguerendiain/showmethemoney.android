@@ -52,6 +52,11 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
 
     private MoneyRecord editingRecord;
 
+    // Set to false to ignore the onItemSelected for the currency and account selector
+    // this are reseted after one run of onItemSelected for each flag
+    private boolean ignoreCurrencySelection;
+    private boolean ignoreAccountSelection;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,9 +66,9 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
         accounts.setAdapter(new AccountSpinnerAdapter(this, dbAccounts));
         dbCurrencies = getMainApp().getDal().getCurrencies();
         currencies.setAdapter(new CurrencySpinnerAdapter(this, dbCurrencies));
+        createRecord.setOnClickListener(this);
         accounts.setOnItemSelectedListener(this);
         currencies.setOnItemSelectedListener(this);
-        createRecord.setOnClickListener(this);
         setAccount(0);
 
         if (getIntent()!=null && getIntent().getExtras()!=null){
@@ -88,19 +93,24 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
                 }
             }
 
-            int realAmount;
+            int writtenAmount;
             if (!currentCurrency.getCode().equals(currentAccount.getCurrency())){
-                realAmount = MoneyHelper.convert(editingRecord.getAmount(), accountCurrency.getFactor(), currentCurrency.getFactor());
+                writtenAmount = MoneyHelper.convert(editingRecord.getAmount(), accountCurrency.getFactor(), currentCurrency.getFactor());
             }else{
-                realAmount = editingRecord.getAmount();
+                writtenAmount = editingRecord.getAmount();
             }
 
-            amount.setText(StringUtils.floatToStringLocalized(this, Math.abs(realAmount) / 100f));
+            amount.setText(StringUtils.floatToStringLocalized(this, Math.abs(writtenAmount) / 100f));
             incomeSwitch.setChecked(editingRecord.getType() == MoneyRecord.Type.income);
             description.setText(editingRecord.getDescription());
         }else{
             currentCurrency = dbCurrencies.get(0);
         }
+
+        // Because after setSelection on the spinners trigger a call to onItemSelected after
+        // onCreate and that will overwrite data I'm adding these two flags
+        ignoreCurrencySelection = true;
+        ignoreAccountSelection = true;
     }
 
     private void setAccount(int idx){
@@ -121,7 +131,7 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.createRecord:
-                int writtenAmount = (int) Math.floor(Integer.parseInt(amount.getText().toString()) * 100);
+                int writtenAmount = (int) Math.floor(Float.parseFloat(amount.getText().toString()) * 100);
                 int realAmount;
 
                 if (currentCurrency.getCode().equals(currentAccount.getCurrency())) {
@@ -181,10 +191,18 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         switch (adapterView.getId()){
             case R.id.accounts:
-                setAccount(i);
+                if (!ignoreAccountSelection) {
+                    setAccount(i);
+                }
+
+                ignoreAccountSelection = false;
                 break;
             case R.id.currencies:
-                currentCurrency = dbCurrencies.get(i);
+                if (!ignoreCurrencySelection) {
+                    currentCurrency = dbCurrencies.get(i);
+                }
+
+                ignoreCurrencySelection = false;
                 break;
         }
     }

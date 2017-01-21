@@ -77,7 +77,7 @@ public class AddEditAccountActivity extends AuthenticatedActivity implements Vie
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.createAccount:
-                int parsedBalance = (int) Math.floor(Integer.parseInt(balance.getText().toString()) * 100);
+                int parsedBalance = (int) Math.floor(Float.parseFloat(balance.getText().toString()) * 100);
 
                 if (editingAccount!=null){
                     editingAccount.setName(name.getText().toString());
