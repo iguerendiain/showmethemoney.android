@@ -1,39 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:padding="11dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingStart="11dp"
+    android:paddingEnd="11dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_weight="1"
-        android:layout_width="0dp"
+    <android.support.v7.widget.CardView
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="1dp"
+        app:cardCornerRadius="1dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/name"
-            android:text="Cuenta de cheques secreta de Suiza y Belice"
+        <LinearLayout
+            android:padding="11dp"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/currency"
-            android:textSize="10sp"
-            android:text="morlacos_purpura"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content">
 
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/name"
+                    android:text="Cuenta de cheques secreta de Suiza y Belice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-    <TextView
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginStart="11dp"
-            android:layout_weight="0"
-            android:id="@+id/balance"
-            android:text="$133,42"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/currency"
+                    android:textSize="10sp"
+                    android:text="morlacos_purpura"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
-</LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginStart="11dp"
+                    android:layout_weight="0"
+                    android:id="@+id/balance"
+                    android:text="$133,42"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>

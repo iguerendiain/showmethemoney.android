@@ -30,4 +30,8 @@ public class StringUtils {
     public static String floatToStringLocalized(Context ctx, float number){
         return formatLocalized(ctx, "%f", number);
     }
+
+    public static String formatMoneyLocalized(Context ctx, String symbol, float amount){
+        return formatLocalized(ctx, symbol+" %.2f", amount);
+    }
 }

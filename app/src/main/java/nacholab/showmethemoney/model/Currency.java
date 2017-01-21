@@ -4,6 +4,9 @@ import com.google.gson.annotations.Expose;
 
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.facebook.stetho.common.StringUtil;
+
+import nacholab.showmethemoney.utils.StringUtils;
 
 public class Currency extends DBModel {
 
@@ -28,6 +31,12 @@ public class Currency extends DBModel {
 
     public String getSymbol() {
         return symbol;
+    }
+
+    public String getDisplaySymbol(){
+        if (StringUtils.isNotBlank(symbol)) {
+            return symbol;
+        }else return code;
     }
 
     public void setSymbol(String symbol) {
