@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"/>
 
         <Button
-                android:text="CREATE RECORD"
+                android:text="SAVE RECORD"
                 android:id="@+id/createRecord"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>

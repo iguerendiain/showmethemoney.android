@@ -13,10 +13,11 @@ import nacholab.showmethemoney.R;
 import nacholab.showmethemoney.model.MoneyRecord;
 import nacholab.showmethemoney.utils.StringUtils;
 
-public class RecordView extends RelativeLayout implements View.OnLongClickListener {
+public class RecordView extends RelativeLayout implements View.OnLongClickListener, View.OnClickListener {
 
     public interface Listener{
         void onDelete(MoneyRecord r);
+        void onOpen(MoneyRecord r);
     }
 
     @BindView(R.id.description)TextView description;
@@ -47,6 +48,7 @@ public class RecordView extends RelativeLayout implements View.OnLongClickListen
         inflate(getContext(), R.layout.view_record_list_item, this);
         ButterKnife.bind(this);
         setOnLongClickListener(this);
+        setOnClickListener(this);
     }
 
     public void setRecord(MoneyRecord r){
@@ -92,6 +94,13 @@ public class RecordView extends RelativeLayout implements View.OnLongClickListen
             return true;
         }else {
             return false;
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (listener!=null){
+            listener.onOpen(record);
         }
     }
 }

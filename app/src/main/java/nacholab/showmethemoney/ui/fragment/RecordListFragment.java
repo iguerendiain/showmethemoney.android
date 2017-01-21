@@ -14,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import nacholab.showmethemoney.R;
 import nacholab.showmethemoney.model.MoneyRecord;
+import nacholab.showmethemoney.ui.activity.AddEditAccountActivity;
 import nacholab.showmethemoney.ui.activity.AddEditRecordActivity;
 import nacholab.showmethemoney.ui.adapter.RecordAdapter;
 import nacholab.showmethemoney.ui.view.RecordView;
@@ -85,5 +86,12 @@ public class RecordListFragment extends BaseFragment implements SwipeRefreshLayo
 
             }
         });
+    }
+
+    @Override
+    public void onOpen(MoneyRecord r) {
+        Intent i = new Intent(getActivity(), AddEditRecordActivity.class);
+        i.putExtra(AddEditRecordActivity.RECORD_UUID, r.getUuid());
+        startActivity(i);
     }
 }

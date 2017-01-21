@@ -18,8 +18,12 @@ import nacholab.showmethemoney.model.MoneyAccount;
 import nacholab.showmethemoney.model.MoneyRecord;
 import nacholab.showmethemoney.ui.adapter.AccountSpinnerAdapter;
 import nacholab.showmethemoney.ui.adapter.CurrencySpinnerAdapter;
+import nacholab.showmethemoney.utils.MoneyHelper;
+import nacholab.showmethemoney.utils.StringUtils;
 
 public class AddEditRecordActivity extends AuthenticatedActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+
+    public static final String RECORD_UUID = "uuid";
 
     @BindView(R.id.accounts)
     Spinner accounts;
@@ -46,6 +50,8 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
     private Currency currentCurrency;
     private Currency accountCurrency;
 
+    private MoneyRecord editingRecord;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +65,42 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
         currencies.setOnItemSelectedListener(this);
         createRecord.setOnClickListener(this);
         setAccount(0);
+
+        if (getIntent()!=null && getIntent().getExtras()!=null){
+            String requestedRecordUUID = getIntent().getExtras().getString(RECORD_UUID);
+            if (requestedRecordUUID!=null){
+                editingRecord = getMainApp().getDal().getRecordByUUID(requestedRecordUUID);
+            }
+        }
+
+        if (editingRecord!=null){
+            for (int a=0; a<dbAccounts.size(); a++){
+                if (dbAccounts.get(a).getUuid().equals(editingRecord.getAccount())){
+                    setAccount(a);
+                }
+            }
+
+            for (int c=0; c<dbCurrencies.size(); c++){
+                if (dbCurrencies.get(c).getCode().equals(editingRecord.getCurrency())){
+                    currentCurrency = dbCurrencies.get(c);
+                    currencies.setSelection(c);
+                    break;
+                }
+            }
+
+            int realAmount;
+            if (!currentCurrency.getCode().equals(currentAccount.getCurrency())){
+                realAmount = MoneyHelper.convert(editingRecord.getAmount(), accountCurrency.getFactor(), currentCurrency.getFactor());
+            }else{
+                realAmount = editingRecord.getAmount();
+            }
+
+            amount.setText(StringUtils.floatToStringLocalized(this, Math.abs(realAmount) / 100f));
+            incomeSwitch.setChecked(editingRecord.getType() == MoneyRecord.Type.income);
+            description.setText(editingRecord.getDescription());
+        }else{
+            currentCurrency = dbCurrencies.get(0);
+        }
     }
 
     private void setAccount(int idx){
@@ -79,23 +121,58 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.createRecord:
-                int writtenAmount = (int) Math.floor(Integer.parseInt(amount.getText().toString())*100);
+                int writtenAmount = (int) Math.floor(Integer.parseInt(amount.getText().toString()) * 100);
                 int realAmount;
 
-                if (currentCurrency.getCode().equals(currentAccount.getCurrency())){
+                if (currentCurrency.getCode().equals(currentAccount.getCurrency())) {
                     realAmount = writtenAmount;
-                }else{
-                    realAmount = (int) Math.floor(writtenAmount * (accountCurrency.getFactor() / currentCurrency.getFactor()));
+                } else {
+                    realAmount = MoneyHelper.convert(writtenAmount, currentCurrency.getFactor(), accountCurrency.getFactor());
                 }
 
-                getMainApp().getDal().addRecord(
-                        (int) Math.floor(realAmount),
-                        incomeSwitch.isChecked()? MoneyRecord.Type.income: MoneyRecord.Type.expense,
-                        description.getText().toString(),
-                        currentAccount.getUuid(),
-                        currentCurrency.getCode(),
-                        (long) (System.currentTimeMillis() / 1000f),
-                        true);
+                MoneyRecord.Type recordType = incomeSwitch.isChecked() ? MoneyRecord.Type.income : MoneyRecord.Type.expense;
+
+                if (editingRecord!=null) {
+                    if (realAmount != editingRecord.getAmount()) {
+                        if (currentAccount.getUuid().equals(editingRecord.getAccount())) {
+                            int difference = realAmount - editingRecord.getAmount();
+                            currentAccount.setBalance(currentAccount.getBalance() + difference);
+                            currentAccount.setSynced(false);
+                            currentAccount.save();
+                        } else {
+                            MoneyAccount oldAccount = null;
+                            for (MoneyAccount a : dbAccounts){
+                                if (a.getUuid().equals(editingRecord.getAccount())){
+                                    oldAccount = a;
+                                    break;
+                                }
+                            }
+
+                            oldAccount.setBalance(oldAccount.getBalance() - editingRecord.getAmount());
+                            oldAccount.setSynced(false);
+                            oldAccount.save();
+                            currentAccount.setBalance(currentAccount.getBalance() + realAmount);
+                            currentAccount.setSynced(false);
+                            currentAccount.save();
+                        }
+                    }
+
+                    editingRecord.setAmount(realAmount);
+                    editingRecord.setType(recordType);
+                    editingRecord.setDescription(description.getText().toString());
+                    editingRecord.setSynced(false);
+                    editingRecord.setCurrency(currentCurrency.getCode());
+                    editingRecord.save();
+                }else {
+                    getMainApp().getDal().addRecord(
+                            (int) Math.floor(realAmount),
+                            recordType,
+                            description.getText().toString(),
+                            currentAccount.getUuid(),
+                            currentCurrency.getCode(),
+                            (long) (System.currentTimeMillis() / 1000f),
+                            true);
+                }
                 finish();
         }
     }
