@@ -30,6 +30,7 @@ public class AccountView extends RelativeLayout implements View.OnLongClickListe
     @BindView(R.id.name)TextView name;
     @BindView(R.id.currency)TextView currency;
     @BindView(R.id.balance)TextView balance;
+    @BindView(R.id.not_synced) View notSynced;
 
     private AccountView.Listener listener;
     private MoneyAccount account;
@@ -70,17 +71,19 @@ public class AccountView extends RelativeLayout implements View.OnLongClickListe
         this.listener = listener;
     }
 
-    public void setAccount(MoneyAccount a){
+    public void setAccount(MoneyAccount a) {
         account = a;
         name.setText(a.getName());
         currency.setText(a.getCurrencyObject().getName());
-        balance.setText(StringUtils.formatMoneyLocalized(getContext(), a.getCurrencyObject().getDisplaySymbol(), a.getBalance()/100f));
+        balance.setText(StringUtils.formatMoneyLocalized(getContext(), a.getCurrencyObject().getDisplaySymbol(), a.getBalance() / 100f));
+        setSynced(a.isSynced());
+    }
 
-        if (!a.isSynced()){
-            setBackgroundResource(R.color.accent);
+    private void setSynced(boolean synced){
+        if (!synced){
+            notSynced.setVisibility(VISIBLE);
         }else{
-            setBackgroundResource(android.R.color.transparent);
+            notSynced.setVisibility(GONE);
         }
-
     }
 }

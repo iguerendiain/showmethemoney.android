@@ -16,9 +16,13 @@ public class MoneyRecord extends DBModel {
     @Column
     private String account;
 
+    private MoneyAccount accountObject;
+
     @Expose
     @Column
     private String currency;
+
+    private Currency currencyObject;
 
     @Expose
     @Column
@@ -81,6 +85,23 @@ public class MoneyRecord extends DBModel {
 
     public void setTime(long time) {
         this.time = time;
+    }
+
+
+    public Currency getCurrencyObject() {
+        return currencyObject;
+    }
+
+    public void setCurrencyObject(Currency currencyObject) {
+        this.currencyObject = currencyObject;
+    }
+
+    public MoneyAccount getAccountObject() {
+        return accountObject;
+    }
+
+    public void setAccountObject(MoneyAccount accountObject) {
+        this.accountObject = accountObject;
     }
 
     @Override

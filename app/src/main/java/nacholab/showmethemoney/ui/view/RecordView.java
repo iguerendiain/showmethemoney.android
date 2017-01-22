@@ -22,9 +22,10 @@ public class RecordView extends RelativeLayout implements View.OnLongClickListen
 
     @BindView(R.id.description)TextView description;
     @BindView(R.id.account)TextView account;
-    @BindView(R.id.currency)TextView currency;
     @BindView(R.id.amount)TextView amount;
     @BindView(R.id.type)ImageView type;
+    @BindView(R.id.date) TextView date;
+    @BindView(R.id.not_synced) View notSynced;
 
     private Listener listener;
     private MoneyRecord record;
@@ -51,35 +52,39 @@ public class RecordView extends RelativeLayout implements View.OnLongClickListen
         setOnClickListener(this);
     }
 
-    public void setRecord(MoneyRecord r){
+    public void setRecord(MoneyRecord r) {
         record = r;
 
-        if (r.getType()!=null){
+        if (r.getType() != null) {
             type.setVisibility(VISIBLE);
-            switch (r.getType()){
+            switch (r.getType()) {
                 case expense:
-                    type.setImageResource(R.drawable.expense_minus_sign);
+                    type.setImageResource(R.drawable.ic_keyboard_arrow_down);
                     break;
                 case income:
-                    type.setImageResource(R.drawable.income_plus_sign);
+                    type.setImageResource(R.drawable.ic_keyboard_arrow_up);
                     break;
                 case patch:
                     type.setImageResource(R.drawable.adjustment_pound_sign);
                     break;
             }
-        }else{
+        } else {
             type.setVisibility(INVISIBLE);
         }
 
         description.setText(r.getDescription());
-        account.setText(r.getAccount());
-        currency.setText(r.getCurrency());
-        amount.setText(StringUtils.formatLocalized(getContext(), "%f", r.getAmount()/100f));
+        account.setText(r.getAccountObject().getName());
+        amount.setText(StringUtils.formatMoneyLocalized(getContext(), r.getCurrencyObject().getDisplaySymbol(), r.getAmount()/100f));
+        date.setText(StringUtils.formatDateCompact(getContext(), r.getTime()));
+        setSynced(r.isSynced());
+    }
 
-        if (!r.isSynced()){
-            setBackgroundResource(R.color.accent);
+
+    private void setSynced(boolean synced){
+        if (!synced){
+            notSynced.setVisibility(VISIBLE);
         }else{
-            setBackgroundResource(android.R.color.transparent);
+            notSynced.setVisibility(GONE);
         }
     }
 

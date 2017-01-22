@@ -3,6 +3,9 @@ package nacholab.showmethemoney.utils;
 import android.content.Context;
 import android.os.Build;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class StringUtils {
@@ -33,5 +36,15 @@ public class StringUtils {
 
     public static String formatMoneyLocalized(Context ctx, String symbol, float amount){
         return formatLocalized(ctx, symbol+" %.2f", amount);
+    }
+
+    public static String formatDateCompact(Context ctx, long time) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(time * 1000);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        String month = calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, getCurrentLocale(ctx));
+        return day+" "+month+" - "+hour+":"+minute;
     }
 }

@@ -2,6 +2,7 @@ package nacholab.showmethemoney.storage;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.icu.text.AlphabeticIndex;
 
 import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Cache;
@@ -31,6 +32,7 @@ public class ActiveAndroidDal extends BaseDal{
     private static final String SYMBOL = "symbol";
     private static final String SYNCED = "synced";
     private static final String DELETED = "deleted";
+    private static final String ACCOUNT = "account";
     private static final String WHERE_SYNCED_AND_DELETED = SYNCED+"=? and "+DELETED+"=?";
     private static final String WHERE_DELETED = DELETED+"=?";
     private static final String TRUE = "1";
@@ -87,8 +89,8 @@ public class ActiveAndroidDal extends BaseDal{
         if (populateCurrencies){
             String query =
                 "select a.*, c."+CODE+", c."+FACTOR+", c."+NAME+" as "+CURRENCY+"_"+NAME+", c."+SYMBOL+" " +
-                "from "+Cache.getTableInfo(MoneyAccount.class).getTableName()+" a "+
-                "left join "+Cache.getTableInfo(Currency.class).getTableName()+" c on a."+CURRENCY+"= c."+CODE+" " +
+                "from "+Cache.getTableName(MoneyAccount.class)+" a "+
+                "left join "+Cache.getTableName(Currency.class)+" c on a."+CURRENCY+"= c."+CODE+" " +
                 "where a."+DELETED+" = 0 order by a."+NAME;
 
             Cursor accountXcurrency = ActiveAndroid.getDatabase().rawQuery(query, null);
@@ -146,8 +148,68 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
-    public List<MoneyRecord> getRecords() {
-        return new Select().from(MoneyRecord.class).where(WHERE_DELETED, FALSE).execute();
+    public List<MoneyRecord> getRecords(boolean populateCurrencies, boolean populateAccounts) {
+
+        if (populateCurrencies || populateAccounts){
+            String query = "select r.*";
+            String currenciesProjection = ", c."+CODE+", c."+FACTOR+", c."+NAME+" as "+CURRENCY+"_"+NAME+", c."+SYMBOL;
+            String accountsProjection = ", a."+NAME+" as "+ACCOUNT+"_"+NAME+", a."+CURRENCY+" as "+ACCOUNT+"_"+CURRENCY+", a."+BALANCE;
+            String currenciesSelection = " left join "+Cache.getTableName(Currency.class)+" c on r."+CURRENCY+"=c."+CODE;
+            String accountsSelection = " left join "+Cache.getTableName(MoneyAccount.class)+" a on r."+ACCOUNT+"=a."+UUID;
+
+            if (populateCurrencies){
+                query+=currenciesProjection;
+            }
+
+            if (populateAccounts){
+                query+=accountsProjection;
+            }
+
+            query+=" from "+Cache.getTableName(MoneyRecord.class)+" r";
+
+            if (populateCurrencies){
+                query+=currenciesSelection;
+            }
+
+            if (populateAccounts){
+                query+=accountsSelection;
+            }
+
+            query+=" order by time desc";
+
+            Cursor recordsPopulated = ActiveAndroid.getDatabase().rawQuery(query, null);
+
+            List<MoneyRecord> records = new ArrayList<>();
+            while (recordsPopulated.moveToNext()){
+                MoneyRecord record = new MoneyRecord();
+
+                record.loadFromCursor(recordsPopulated);
+
+                if (populateCurrencies){
+                    Currency currency = new Currency();
+                    currency.loadFromCursor(recordsPopulated);
+                    currency.setName(recordsPopulated.getString(recordsPopulated.getColumnIndex(CURRENCY+"_"+NAME)));
+                    record.setCurrencyObject(currency);
+                }
+
+                if (populateAccounts) {
+                    MoneyAccount account = new MoneyAccount();
+                    account.loadFromCursor(recordsPopulated);
+                    account.setName(recordsPopulated.getString(recordsPopulated.getColumnIndex(ACCOUNT+"_"+NAME)));
+                    record.setAccountObject(account);
+                }
+
+                records.add(record);
+            }
+
+            recordsPopulated.close();
+
+            return records;
+        }else {
+            return new Select().from(MoneyRecord.class).where(WHERE_DELETED, FALSE).execute();
+        }
+
+
     }
 
     @Override
