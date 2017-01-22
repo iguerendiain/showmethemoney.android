@@ -20,6 +20,7 @@ public abstract class BaseDal {
     public abstract MainSyncData buildUploadMainSyncData(long lastSync);
     public abstract void setSynced(MainSyncData data, boolean synced);
     public abstract MoneyAccount addAccount(String name, String currency, int balance);
+    public abstract MoneyAccount updateAccount(String uuid, String name);
     public abstract void cleanDeleted();
     public abstract List<MoneyRecord> getRecords(boolean populateCurrencies, boolean populateAccounts);
     public abstract List<MoneyRecord> getRecordsByCurrency(Currency c);

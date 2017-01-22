@@ -357,6 +357,19 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
+    public MoneyAccount updateAccount(String uuid, String name) {
+        MoneyAccount account = getAccountByUUID(uuid);
+        if (account!=null) {
+            account.setName(name);
+            account.setSynced(false);
+            account.save();
+        }
+
+        return account;
+
+    }
+
+    @Override
     public void cleanDeleted() {
         new Delete().from(MoneyRecord.class).where(WHERE_DELETED,TRUE).execute();
         new Delete().from(MoneyAccount.class).where(WHERE_DELETED,TRUE).execute();

@@ -78,15 +78,13 @@ public class AddEditAccountActivity extends AuthenticatedActivity implements Vie
         switch (view.getId()) {
             case R.id.createAccount:
                 int parsedBalance = (int) Math.floor(Float.parseFloat(balance.getText().toString()) * 100);
+                String nameText = name.getText().toString();
+                String currency = currentCurrency.getCode();
 
                 if (editingAccount!=null){
-                    editingAccount.setName(name.getText().toString());
-                    editingAccount.setCurrency(currentCurrency.getCode());
-                    editingAccount.setBalance(parsedBalance);
-                    editingAccount.setSynced(false);
-                    editingAccount.save();
+                    getMainApp().getDal().updateAccount(editingAccount.getUuid(), nameText);
                 }else {
-                    getMainApp().getDal().addAccount(name.getText().toString(),currentCurrency.getCode(),parsedBalance);
+                    getMainApp().getDal().addAccount(nameText, currency, parsedBalance);
                 }
                 finish();
         }
