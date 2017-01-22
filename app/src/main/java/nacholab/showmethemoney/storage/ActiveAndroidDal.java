@@ -236,7 +236,7 @@ public class ActiveAndroidDal extends BaseDal{
         record.setAccount(account);
         record.setCurrency(currency);
         record.setSynced(false);
-        record.setTime(time);
+        record.setTime(time/1000);
         record.save();
 
         if (updateAccountBalance){
@@ -247,6 +247,55 @@ public class ActiveAndroidDal extends BaseDal{
         }
 
         return record;
+    }
+
+    @Override
+    public MoneyRecord updateRecord(String uuid, int amount, MoneyRecord.Type type, String description, String account, String currency, long time, boolean updateAccountBalance) {
+        MoneyRecord record = getRecordByUUID(uuid);
+        MoneyAccount newAccount = getAccountByUUID(account);
+
+        if (record!=null && newAccount!=null) {
+            int realAmount;
+            if (type == MoneyRecord.Type.income){
+                realAmount = amount;
+            }else{
+                realAmount = -amount;
+            }
+
+            if (updateAccountBalance) {
+                if (realAmount != record.getAmount()) {
+                    if (newAccount.getUuid().equals(record.getAccount())) {
+                        int difference = realAmount - record.getAmount();
+                        newAccount.setBalance(newAccount.getBalance() + difference);
+                        newAccount.setSynced(false);
+                        newAccount.save();
+                    } else {
+                        MoneyAccount oldAccount = getAccountByUUID(record.getAccount());
+                        if (oldAccount!=null) {
+                            oldAccount.setBalance(oldAccount.getBalance() - record.getAmount());
+                            oldAccount.setSynced(false);
+                            oldAccount.save();
+                            newAccount.setBalance(newAccount.getBalance() + realAmount);
+                            newAccount.setSynced(false);
+                            newAccount.save();
+                        }else{
+                            return null;
+                        }
+                    }
+                }
+            }
+
+            record.setAmount(realAmount);
+            record.setType(type);
+            record.setDescription(description);
+            record.setSynced(false);
+            record.setCurrency(currency);
+            record.save();
+
+            return record;
+        }else {
+            return null;
+        }
     }
 
     @Override

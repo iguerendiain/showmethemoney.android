@@ -42,7 +42,7 @@ public class StringUtils {
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(time * 1000);
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
+        String minute = formatLocalized(ctx, "%02d", calendar.get(Calendar.MINUTE));
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         String month = calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, getCurrentLocale(ctx));
         return day+" "+month+" - "+hour+":"+minute;
