@@ -3,4 +3,6 @@
     <dimen name="tabsHeight">56dp</dimen>
     <dimen name="toolbarPlusTabsHeight">112dp</dimen>
     <dimen name="toolbarTextSize">20sp</dimen>
+    <dimen name="toolbarHorizonalPadding">16dp</dimen>
+    <dimen name="toolbarTitleMargin">72dp</dimen>
 </resources>

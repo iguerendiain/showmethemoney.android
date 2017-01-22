@@ -27,4 +27,15 @@
     <string name="currency_factor">Related to currency with factor 1</string>
     <string name="currency_not_found">Currency not found</string>
     <string name="cant_add_record_no_accounts">Cannot add a new Record when no Accounts exists yet. Please create at least one account before adding Records.</string>
+    <string name="create_account">Create Account</string>
+    <string name="account_name_hint">Descriptive name of the account</string>
+    <string name="initial_balance">Initial Balance</string>
+    <string name="currency">Currency</string>
+    <string name="currency_search_hint">Start typing a currency name</string>
+    <string name="current_balance">Current Balance</string>
+    <string name="edit_account">Edit Account</string>
+    <string name="name_cant_be_empty">Name cannot be empty</string>
+    <string name="name_and_currency_cant_be_empty">Name and currency cannot be empty</string>
+    <string name="cant_delete_account_with_records">Cannot delete an Account with records</string>
+    <string name="invalid_balance">Invalid balance format</string>
 </resources>

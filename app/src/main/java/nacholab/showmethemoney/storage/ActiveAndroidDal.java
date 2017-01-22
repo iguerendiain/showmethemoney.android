@@ -10,6 +10,7 @@ import com.activeandroid.Configuration;
 import com.activeandroid.Model;
 import com.activeandroid.TableInfo;
 import com.activeandroid.query.Delete;
+import com.activeandroid.query.From;
 import com.activeandroid.query.Select;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import nacholab.showmethemoney.model.Currency;
 import nacholab.showmethemoney.model.MainSyncData;
 import nacholab.showmethemoney.model.MoneyAccount;
 import nacholab.showmethemoney.model.MoneyRecord;
+import nacholab.showmethemoney.utils.StringUtils;
 
 public class ActiveAndroidDal extends BaseDal{
 
@@ -40,6 +42,7 @@ public class ActiveAndroidDal extends BaseDal{
     private static final String WHERE_CURRENCY = CURRENCY+" = ?";
     private static final String WHERE_UUID = UUID+" = ?";
     private static final String WHERE_CODE = CODE+" = ?";
+    private static final String WHERE_ACCOUNT = ACCOUNT+" = ?";
 
     public ActiveAndroidDal(Context context) {
         Configuration.Builder configurationBuilder = new Configuration.Builder(context);
@@ -91,7 +94,7 @@ public class ActiveAndroidDal extends BaseDal{
                 "select a.*, c."+CODE+", c."+FACTOR+", c."+NAME+" as "+CURRENCY+"_"+NAME+", c."+SYMBOL+" " +
                 "from "+Cache.getTableName(MoneyAccount.class)+" a "+
                 "left join "+Cache.getTableName(Currency.class)+" c on a."+CURRENCY+"= c."+CODE+" " +
-                "where a."+DELETED+" = 0 order by a."+NAME;
+                "where a."+DELETED+" = "+FALSE+" order by a."+NAME;
 
             Cursor accountXcurrency = ActiveAndroid.getDatabase().rawQuery(query, null);
 
@@ -100,20 +103,9 @@ public class ActiveAndroidDal extends BaseDal{
                 MoneyAccount account = new MoneyAccount();
                 Currency currency = new Currency();
 
-                account.setDeleted(accountXcurrency.getInt(accountXcurrency.getColumnIndex(DELETED))!=0);
-                account.setLastSync(accountXcurrency.getLong(accountXcurrency.getColumnIndex(LAST_SYNC)));
-                account.setSynced(accountXcurrency.getInt(accountXcurrency.getColumnIndex(SYNCED))!=0);
-                account.setUuid(accountXcurrency.getString(accountXcurrency.getColumnIndex(UUID)));
-                account.setBalance(accountXcurrency.getInt(accountXcurrency.getColumnIndex(BALANCE)));
-                account.setCurrency(accountXcurrency.getString(accountXcurrency.getColumnIndex(CURRENCY)));
-                account.setName(accountXcurrency.getString(accountXcurrency.getColumnIndex(NAME)));
-
+                account.loadFromCursor(accountXcurrency);
+                currency.loadFromCursor(accountXcurrency);
                 currency.setName(accountXcurrency.getString(accountXcurrency.getColumnIndex(CURRENCY+"_"+NAME)));
-                currency.setUuid(accountXcurrency.getString(accountXcurrency.getColumnIndex(CURRENCY)));
-                currency.setCode(accountXcurrency.getString(accountXcurrency.getColumnIndex(CODE)));
-                currency.setFactor(accountXcurrency.getFloat(accountXcurrency.getColumnIndex(FACTOR)));
-                currency.setSymbol(accountXcurrency.getString(accountXcurrency.getColumnIndex(SYMBOL)));
-
                 account.setCurrencyObject(currency);
 
                 accounts.add(account);
@@ -140,6 +132,19 @@ public class ActiveAndroidDal extends BaseDal{
     @Override
     public List<Currency> getCurrencies() {
         return new Select().from(Currency.class).where(WHERE_DELETED, FALSE).execute();
+    }
+
+    @Override
+    public List<Currency> findCurrencies(String filter) {
+        From query = new Select().from(Currency.class);
+
+        if (StringUtils.isNotBlank(filter)){
+            query.where(CODE+" like '%"+filter+"%' or "+NAME+" like '%"+filter+"%'");
+        }
+
+        query.orderBy(NAME);
+
+        return query.execute();
     }
 
     @Override
@@ -210,6 +215,19 @@ public class ActiveAndroidDal extends BaseDal{
         }
 
 
+    }
+
+    @Override
+    public List<MoneyRecord> getRecordsByAccount(MoneyAccount a) {
+        if (a!=null) {
+            String accountUUID = a.getUuid();
+            return new Select().from(MoneyRecord.class)
+                    .where(WHERE_ACCOUNT, accountUUID)
+                    .and(WHERE_DELETED, FALSE)
+                    .execute();
+        }else{
+            return null;
+        }
     }
 
     @Override

@@ -17,7 +17,6 @@ import nacholab.showmethemoney.model.Currency;
 import nacholab.showmethemoney.model.MoneyAccount;
 import nacholab.showmethemoney.model.MoneyRecord;
 import nacholab.showmethemoney.ui.adapter.AccountSpinnerAdapter;
-import nacholab.showmethemoney.ui.adapter.CurrencySpinnerAdapter;
 import nacholab.showmethemoney.utils.MoneyHelper;
 import nacholab.showmethemoney.utils.StringUtils;
 
@@ -65,7 +64,6 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
         dbAccounts = getMainApp().getDal().getAccounts(false);
         accounts.setAdapter(new AccountSpinnerAdapter(this, dbAccounts));
         dbCurrencies = getMainApp().getDal().getCurrencies();
-        currencies.setAdapter(new CurrencySpinnerAdapter(this, dbCurrencies));
         createRecord.setOnClickListener(this);
         accounts.setOnItemSelectedListener(this);
         currencies.setOnItemSelectedListener(this);

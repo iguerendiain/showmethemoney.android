@@ -10,15 +10,19 @@
         <item name="android:background">@color/primary</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/toolbarHeight</item>
+        <item name="android:paddingStart">@dimen/toolbarHorizonalPadding</item>
+        <item name="android:paddingEnd">@dimen/toolbarHorizonalPadding</item>
     </style>
     <style name="toolbar_title">
-        <item name="android:layout_marginStart">@dimen/toolbarHeight</item>
         <item name="android:textSize">@dimen/toolbarTextSize</item>
         <item name="android:textColor">@color/icons</item>
         <item name="android:layout_centerVertical">true</item>
         <item name="android:layout_alignParentStart">true</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:layout_marginStart">@dimen/toolbarTitleMargin</item>
     </style>
     <style name="toolbar_actions_container">
         <item name="android:orientation">horizontal</item>
@@ -37,7 +41,13 @@
            <item name="android:layout_marginTop">@dimen/toolbarHeight</item>
     </style>
     <style name="form_field_title">
-        <item name="android:textSize">12sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:textColor">@color/accent</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
@@ -48,6 +58,47 @@
         <item name="android:textColorHint">@color/primaryLight</item>
         <item name="android:textColor">@color/primary</item>
         <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="toolbar_right_action">
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="toolbar_left_action">
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="input_text">
+        <item name="android:background">@drawable/input_bg</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:textColor">@color/primaryText</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="divider">
+        <item name="android:background">@color/secondaryText</item>
+        <item name="android:layout_below">@+id/mainContainer</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">.5dp</item>
+    </style>
+    <style name="read_only_data">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/icons</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 

@@ -2,44 +2,130 @@
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
+        android:background="@color/primaryDark"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-                android:text="Name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+        <RelativeLayout style="@style/toolbar">
 
-        <EditText
-                android:id="@+id/name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                <ImageView
+                        android:id="@+id/back"
+                        android:src="@drawable/ic_action_navigation_arrow_back"
+                        style="@style/toolbar_left_action"/>
 
-        <TextView
-                android:text="Currency"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                <TextView
+                        style="@style/toolbar_title"
+                        android:id="@+id/title"
+                        android:text="@string/create_account"/>
 
-        <Spinner
-                android:id="@+id/currencies"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                <ImageView
+                        android:id="@+id/createAccount"
+                        android:src="@drawable/ic_action_action_done"
+                        style="@style/toolbar_right_action"/>
 
-        <TextView
-                android:text="Current balance"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+        </RelativeLayout>
 
-        <EditText
-                android:id="@+id/balance"
-                android:inputType="number"
+        <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="match_parent">
 
-        <Button
-                android:text="SAVE ACCOUNT"
-                android:id="@+id/createAccount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                        android:text="@string/name"
+                                        style="@style/form_field_title"/>
+
+                                <EditText
+                                        android:id="@+id/name"
+                                        android:hint="@string/account_name_hint"
+                                        style="@style/input_text"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                                android:visibility="gone"
+                                android:id="@+id/add_container"
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                        android:text="@string/initial_balance"
+                                        style="@style/form_field_title"/>
+
+                                <EditText
+                                        android:id="@+id/balance"
+                                        android:inputType="number"
+                                        style="@style/input_text"/>
+
+                                <TextView
+                                        android:text="@string/currency"
+                                        style="@style/form_field_title"/>
+
+                                <EditText
+                                        android:id="@+id/currency_search"
+                                        android:hint="@string/currency_search_hint"
+                                        style="@style/input_text"/>
+
+                                <android.support.v7.widget.RecyclerView
+                                        android:id="@+id/currencies"
+                                        android:background="@color/primaryLight"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="300dp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                                android:id="@+id/edit_container"
+                                android:orientation="horizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <LinearLayout
+                                        android:paddingStart="16dp"
+                                        android:orientation="vertical"
+                                        android:layout_weight="1"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content">
+
+                                        <TextView
+                                                android:text="@string/currency"
+                                                android:gravity="center"
+                                                style="@style/form_field_title"/>
+
+                                        <TextView
+                                                android:text="Morlacos púrpura de Istambúl"
+                                                android:id="@+id/saved_currency"
+                                                style="@style/read_only_data"/>
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                        android:orientation="vertical"
+                                        android:layout_weight="1"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content">
+
+                                        <TextView
+                                                android:text="@string/current_balance"
+                                                android:gravity="center"
+                                                style="@style/form_field_title"/>
+
+                                        <TextView
+                                                android:text="MP$I 124.853,00"
+                                                android:id="@+id/saved_balance"
+                                                style="@style/read_only_data"/>
+
+                                </LinearLayout>
+
+                        </LinearLayout>
+                </LinearLayout>
+        </ScrollView>
 
 </LinearLayout>

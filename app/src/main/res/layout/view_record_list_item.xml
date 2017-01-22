@@ -82,10 +82,6 @@
             android:layout_width="20dp"
             android:layout_height="20dp"/>
 
-    <View
-        android:background="@color/secondaryText"
-        android:layout_below="@+id/mainContainer"
-        android:layout_width="match_parent"
-        android:layout_height=".5dp" />
+    <View style="@style/divider"/>
 
 </RelativeLayout>

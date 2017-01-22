@@ -10,10 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import nacholab.showmethemoney.R;
 import nacholab.showmethemoney.model.MoneyAccount;
+import nacholab.showmethemoney.model.MoneyRecord;
 import nacholab.showmethemoney.ui.activity.AddEditAccountActivity;
 import nacholab.showmethemoney.ui.adapter.AccountAdapter;
 import nacholab.showmethemoney.ui.view.AccountView;
@@ -76,19 +79,25 @@ public class AccountsListFragment extends BaseFragment implements SwipeRefreshLa
 
     @Override
     public void onDelete(final MoneyAccount a) {
-        DialogHelper.showConfirmationDialog(getContext(), getString(R.string.sure_to_delete_account), new DialogHelper.ConfirmationListener() {
-            @Override
-            public void onConfirmationDialogYes() {
-                getMainApp().getDal().markAsDeleted(a);
-                adapter.remove(a);
-                adapter.notifyDataSetChanged();
-            }
+        List<MoneyRecord> accountRecords = getMainApp().getDal().getRecordsByAccount(a);
+        if (accountRecords==null || accountRecords.size()==0){
+            DialogHelper.showConfirmationDialog(getContext(), getString(R.string.sure_to_delete_account), new DialogHelper.ConfirmationListener() {
+                @Override
+                public void onConfirmationDialogYes() {
+                    getMainApp().getDal().markAsDeleted(a);
+                    adapter.remove(a);
+                    adapter.notifyDataSetChanged();
+                }
 
-            @Override
-            public void onConfirmationDialogNo() {
+                @Override
+                public void onConfirmationDialogNo() {
 
-            }
-        });
+                }
+            });
+        }else{
+            DialogHelper.showInformationDialog(getContext(), R.string.cant_delete_account_with_records, R.string.ok, null);
+        }
+
     }
 
     @Override
