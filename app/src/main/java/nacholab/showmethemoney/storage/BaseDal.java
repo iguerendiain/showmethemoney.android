@@ -31,6 +31,8 @@ public abstract class BaseDal {
     public abstract void markAsDeleted(MoneyRecord d, boolean updateAccountBalance);
     public abstract void saveOrUpdateCurrency(List<Currency> currencies);
     public abstract Currency getCurrencyByCode(String code);
+    public abstract List<MoneyAccount> getAccountsByUse();
+    public abstract List<Currency> getCurrencyByUse();
 
     static String buildId(){
         return UUID.randomUUID().toString();

@@ -2,11 +2,11 @@ package nacholab.showmethemoney.ui.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewPager;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.Switch;
+import android.widget.RadioButton;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -16,31 +16,22 @@ import nacholab.showmethemoney.R;
 import nacholab.showmethemoney.model.Currency;
 import nacholab.showmethemoney.model.MoneyAccount;
 import nacholab.showmethemoney.model.MoneyRecord;
-import nacholab.showmethemoney.ui.adapter.AccountSpinnerAdapter;
+import nacholab.showmethemoney.ui.adapter.AccountChooserAdapter;
+import nacholab.showmethemoney.ui.adapter.CurrencyChooserAdapter;
 import nacholab.showmethemoney.utils.MoneyHelper;
 import nacholab.showmethemoney.utils.StringUtils;
 
-public class AddEditRecordActivity extends AuthenticatedActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class AddEditRecordActivity extends AuthenticatedActivity implements View.OnClickListener  {
 
     public static final String RECORD_UUID = "uuid";
 
-    @BindView(R.id.accounts)
-    Spinner accounts;
-
-    @BindView(R.id.currencies)
-    Spinner currencies;
-
-    @BindView(R.id.amount)
-    EditText amount;
-
-    @BindView(R.id.description)
-    EditText description;
-
-    @BindView(R.id.createRecord)
-    View createRecord;
-
-    @BindView(R.id.income_switch)
-    Switch incomeSwitch;
+    @BindView(R.id.account_chooser) ViewPager accountChooser;
+    @BindView(R.id.currency_chooser) ViewPager currencyChooser;
+    @BindView(R.id.income) RadioButton income;
+    @BindView(R.id.expense) RadioButton expense;
+    @BindView(R.id.amount) EditText amount;
+    @BindView(R.id.description) EditText description;
+    @BindView(R.id.createRecord) View createRecord;
 
     private List<MoneyAccount> dbAccounts;
     private List<Currency> dbCurrencies;
@@ -51,22 +42,21 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
 
     private MoneyRecord editingRecord;
 
-    // Set to false to ignore the onItemSelected for the currency and account selector
-    // this are reseted after one run of onItemSelected for each flag
-    private boolean ignoreCurrencySelection;
-    private boolean ignoreAccountSelection;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addrecord);
         ButterKnife.bind(this);
-        dbAccounts = getMainApp().getDal().getAccounts(false);
-        accounts.setAdapter(new AccountSpinnerAdapter(this, dbAccounts));
-        dbCurrencies = getMainApp().getDal().getCurrencies();
         createRecord.setOnClickListener(this);
-        accounts.setOnItemSelectedListener(this);
-        currencies.setOnItemSelectedListener(this);
+
+        dbAccounts = getMainApp().getDal().getAccountsByUse();
+        dbCurrencies = getMainApp().getDal().getCurrencyByUse();
+
+        accountChooser.setAdapter(new AccountChooserAdapter(this, dbAccounts));
+        accountChooser.addOnPageChangeListener(new AccountListener());
+
+        currencyChooser.setAdapter(new CurrencyChooserAdapter(this, dbCurrencies));
+        currencyChooser.addOnPageChangeListener(new CurrencyListener());
 
         if (getIntent()!=null && getIntent().getExtras()!=null){
             String requestedRecordUUID = getIntent().getExtras().getString(RECORD_UUID);
@@ -79,13 +69,13 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
             for (int a=0; a<dbAccounts.size(); a++){
                 if (dbAccounts.get(a).getUuid().equals(editingRecord.getAccount())){
                     setAccount(a);
+                    break;
                 }
             }
 
             for (int c=0; c<dbCurrencies.size(); c++){
                 if (dbCurrencies.get(c).getCode().equals(editingRecord.getCurrency())){
-                    currentCurrency = dbCurrencies.get(c);
-                    currencies.setSelection(c);
+                    setCurrency(c);
                     break;
                 }
             }
@@ -98,25 +88,27 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
             }
 
             amount.setText(StringUtils.floatToStringLocalized(this, Math.abs(writtenAmount) / 100f));
-            incomeSwitch.setChecked(editingRecord.getType() == MoneyRecord.Type.income);
+            if (editingRecord.getType()==MoneyRecord.Type.income) {
+                income.setChecked(true);
+            }else{
+                expense.setChecked(true);
+            }
+
             description.setText(editingRecord.getDescription());
         }else{
             setAccount(0);
+            expense.setChecked(true);
+            amount.requestFocus();
         }
-
-        // Because after setSelection on the spinners trigger a call to onItemSelected after
-        // onCreate and that will overwrite data I'm adding these two flags
-        ignoreCurrencySelection = true;
-        ignoreAccountSelection = true;
     }
 
     private void setAccount(int idx){
         currentAccount = dbAccounts.get(idx);
-        accounts.setSelection(idx);
+        accountChooser.setCurrentItem(idx);
         String currencyCode = currentAccount.getCurrency();
         for (int c=0; c<dbCurrencies.size(); c++){
             if (dbCurrencies.get(c).getCode().equals(currencyCode)){
-                currencies.setSelection(c);
+                currencyChooser.setCurrentItem(c);
                 currentCurrency = dbCurrencies.get(c);
                 accountCurrency = dbCurrencies.get(c);
                 break;
@@ -124,12 +116,29 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
         }
     }
 
+    private void setCurrency(int idx){
+        currencyChooser.setCurrentItem(idx);
+        currentCurrency = dbCurrencies.get(idx);
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.createRecord:
-                int writtenAmount = (int) Math.floor(Float.parseFloat(amount.getText().toString()) * 100);
                 int realAmount;
+                int writtenAmount = 0;
+
+                if (StringUtils.isNotBlank(amount.getText().toString())) {
+                    try {
+                        writtenAmount = (int) Math.floor(Float.parseFloat(amount.getText().toString()) * 100);
+                    }catch (Exception e){
+                        Toast.makeText(this, R.string.invalid_amount, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }else{
+                    writtenAmount = 0;
+                }
+
 
                 if (currentCurrency.getCode().equals(currentAccount.getCurrency())) {
                     realAmount = writtenAmount;
@@ -137,7 +146,7 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
                     realAmount = MoneyHelper.convert(writtenAmount, currentCurrency.getFactor(), accountCurrency.getFactor());
                 }
 
-                MoneyRecord.Type recordType = incomeSwitch.isChecked() ? MoneyRecord.Type.income : MoneyRecord.Type.expense;
+                MoneyRecord.Type recordType = income.isChecked() ? MoneyRecord.Type.income : MoneyRecord.Type.expense;
 
                 String descriptionText = description.getText().toString();
                 String account = currentAccount.getUuid();
@@ -157,28 +166,39 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
         }
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        switch (adapterView.getId()){
-            case R.id.accounts:
-                if (!ignoreAccountSelection) {
-                    setAccount(i);
-                }
+    private class CurrencyListener implements ViewPager.OnPageChangeListener {
 
-                ignoreAccountSelection = false;
-                break;
-            case R.id.currencies:
-                if (!ignoreCurrencySelection) {
-                    currentCurrency = dbCurrencies.get(i);
-                }
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-                ignoreCurrencySelection = false;
-                break;
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            setCurrency(position);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
         }
     }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
+    private class AccountListener implements ViewPager.OnPageChangeListener {
 
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            setAccount(position);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
     }
 }

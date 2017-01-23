@@ -1,86 +1,175 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/primaryDark"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout style="@style/toolbar">
+
+        <ImageView
+                android:id="@+id/back"
+                android:src="@drawable/ic_action_navigation_arrow_back"
+                style="@style/toolbar_left_action"/>
+
+        <TextView
+                style="@style/toolbar_title"
+                android:id="@+id/title"
+                android:text="@string/create_record"/>
+
+        <ImageView
+                android:id="@+id/createRecord"
+                android:src="@drawable/ic_action_action_done"
+                style="@style/toolbar_right_action"/>
+
+    </RelativeLayout>
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-                android:text="Account"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        <Spinner
-                android:id="@+id/accounts"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        <TextView
-                android:text="Currency"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        <Spinner
-                android:id="@+id/currencies"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        <TextView
-                android:text="Amount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        <EditText
-                android:id="@+id/amount"
-                android:inputType="numberSigned"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        <TextView
-                android:text="Type"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
         <LinearLayout
-                android:layout_gravity="center"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:paddingBottom="16dp"
+            android:orientation="vertical"
+            android:background="@color/primaryDark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:background="@drawable/choosers_bg"
                 android:orientation="horizontal"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <android.support.v4.view.ViewPager
+                        android:id="@+id/account_chooser"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp" />
+
+                <View
+                    android:background="@color/primaryText"
+                    android:layout_width="3dp"
+                    android:layout_height="match_parent" />
+
+                <android.support.v4.view.ViewPager
+                        android:id="@+id/currency_chooser"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="@string/amount"
+                        android:gravity="center"
+                        style="@style/form_field_title"/>
+
+                    <EditText
+                            android:id="@+id/amount"
+                            android:gravity="end|center_vertical"
+                            android:textSize="36sp"
+                            android:layout_height="64dp"
+                            android:inputType="numberDecimal"
+                            style="@style/input_text"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content">
+
+                    <TextView
+                            android:text="@string/type"
+                            android:gravity="center"
+                            style="@style/form_field_title"/>
+
+                    <RadioGroup
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_height="64dp">
+
+                        <RadioButton
+                                android:id="@+id/income"
+                                android:text="@string/income"
+                                android:layout_weight="1"
+                                android:textColor="@color/primaryLight"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"/>
+
+                        <RadioButton
+                                android:id="@+id/expense"
+                                android:text="@string/expense"
+                                android:textColor="@color/primaryLight"
+                                android:layout_weight="1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"/>
+
+                    </RadioGroup>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!--TextView
+                android:text="@string/tags"
+                style="@style/form_field_title"/>
+
+            <RelativeLayout
+                style="@style/input_text"
+                android:layout_width="match_parent"
+                android:layout_height="75dp">
+
+            </RelativeLayout>
+
             <TextView
-                    android:text="Expense"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                android:text="@string/suggested_tags"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                style="@style/form_field_title"/>
 
-            <Switch
-                    android:id="@+id/income_switch"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+            <RelativeLayout
+                    style="@style/input_text"
+                    android:layout_marginBottom="0dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp">
+
+            </RelativeLayout>
+
+            <Button
+                    android:text="@string/add_all"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/-->
 
             <TextView
-                    android:text="Income"
+                    android:text="@string/notes"
+                    android:layout_weight="1"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    style="@style/form_field_title"/>
 
+            <EditText
+                    android:id="@+id/description"
+                    style="@style/input_text"
+                    android:layout_marginBottom="0dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp" />
 
         </LinearLayout>
-
-        <TextView
-                android:text="Description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        <EditText
-                android:id="@+id/description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        <Button
-                android:text="SAVE RECORD"
-                android:id="@+id/createRecord"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
+    </ScrollView>
 </LinearLayout>

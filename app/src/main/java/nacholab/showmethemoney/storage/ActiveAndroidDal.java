@@ -35,6 +35,7 @@ public class ActiveAndroidDal extends BaseDal{
     private static final String SYNCED = "synced";
     private static final String DELETED = "deleted";
     private static final String ACCOUNT = "account";
+    private static final String TIME = "time";
     private static final String WHERE_SYNCED_AND_DELETED = SYNCED+"=? and "+DELETED+"=?";
     private static final String WHERE_DELETED = DELETED+"=?";
     private static final String TRUE = "1";
@@ -120,6 +121,24 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
+    public List<MoneyAccount> getAccountsByUse() {
+        String query =
+                "select a.*, (select count(1) from "+Cache.getTableName(MoneyRecord.class)+" r where r."+ACCOUNT+"=a."+UUID+") as records " +
+                "from "+Cache.getTableName(MoneyAccount.class)+" a order by records desc";
+
+        Cursor accountsCursor = ActiveAndroid.getDatabase().rawQuery(query, null);
+
+        List<MoneyAccount> accounts = new ArrayList<>();
+        while (accountsCursor.moveToNext()){
+            MoneyAccount account = new MoneyAccount();
+            account.loadFromCursor(accountsCursor);
+            accounts.add(account);
+        }
+
+        return accounts;
+    }
+
+    @Override
     public MoneyAccount getAccountByUUID(String uuid) {
         return new Select().from(MoneyAccount.class).where(WHERE_DELETED, FALSE).where(WHERE_UUID, uuid).executeSingle();
     }
@@ -132,6 +151,26 @@ public class ActiveAndroidDal extends BaseDal{
     @Override
     public List<Currency> getCurrencies() {
         return new Select().from(Currency.class).where(WHERE_DELETED, FALSE).execute();
+    }
+
+    @Override
+    public List<Currency> getCurrencyByUse() {
+        String query =
+                "select c.*, count(r."+UUID+") as records from "+Cache.getTableName(Currency.class)+" c " +
+                "left join "+Cache.getTableName(MoneyRecord.class)+" r on r."+CURRENCY+" = c."+CODE+" " +
+                "where r."+UUID+" is not null group by c."+UUID+" union " +
+                "select *,0 from "+Cache.getTableName(Currency.class)+" order by records desc, "+NAME;
+
+        Cursor currencyCursor = ActiveAndroid.getDatabase().rawQuery(query, null);
+
+        List<Currency> currencies = new ArrayList<>();
+        while (currencyCursor.moveToNext()){
+            Currency currency = new Currency();
+            currency.loadFromCursor(currencyCursor);
+            currencies.add(currency);
+        }
+
+        return currencies;
     }
 
     @Override
@@ -180,7 +219,7 @@ public class ActiveAndroidDal extends BaseDal{
                 query+=accountsSelection;
             }
 
-            query+=" order by time desc";
+            query+=" where r."+DELETED+" = "+FALSE+" order by "+TIME+" desc";
 
             Cursor recordsPopulated = ActiveAndroid.getDatabase().rawQuery(query, null);
 

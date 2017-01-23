@@ -7,13 +7,13 @@
     <string name="no">No</string>
     <string name="ok">OK</string>
     <string name="sure_to_delete_currency">Are you sure you want to delete this currency?</string>
-    <string name="sure_to_delete_account">Are you sure you want to delete this account?</string>
+    <string name="sure_to_delete_account">Are you sure you want to delete this currency?</string>
     <string name="sure_to_delete_record">Are you sure you want to delete this record?</string>
     <string name="auth_welcome">Welcome to Show Me The Money, please access the app the continue</string>
     <string name="auth_wait">Waiting for authentication</string>
     <string name="api_connection_error">There was a problem trying to access the backend server</string>
     <string name="cant_remove_currency_stuff_using_it">Cannot remove this currency since there are accounts and/or records using it</string>
-    <string name="cant_remove_account_records_using_it">Cannot remove this account since it contains records</string>
+    <string name="cant_remove_account_records_using_it">Cannot remove this currency since it contains records</string>
     <string name="launcher_add_record">SMTM: Add Record</string>
     <string name="add_new_currency">Add new currency</string>
     <string name="edit_currency">Edit currency</string>
@@ -26,9 +26,9 @@
     <string name="factor">Factor</string>
     <string name="currency_factor">Related to currency with factor 1</string>
     <string name="currency_not_found">Currency not found</string>
-    <string name="cant_add_record_no_accounts">Cannot add a new Record when no Accounts exists yet. Please create at least one account before adding Records.</string>
+    <string name="cant_add_record_no_accounts">Cannot add a new Record when no Accounts exists yet. Please create at least one currency before adding Records.</string>
     <string name="create_account">Create Account</string>
-    <string name="account_name_hint">Descriptive name of the account</string>
+    <string name="account_name_hint">Descriptive name of the currency</string>
     <string name="initial_balance">Initial Balance</string>
     <string name="currency">Currency</string>
     <string name="currency_search_hint">Start typing a currency name</string>
@@ -38,4 +38,14 @@
     <string name="name_and_currency_cant_be_empty">Name and currency cannot be empty</string>
     <string name="cant_delete_account_with_records">Cannot delete an Account with records</string>
     <string name="invalid_balance">Invalid balance format</string>
+    <string name="create_record">Create Record</string>
+    <string name="amount">Amount</string>
+    <string name="type">Type</string>
+    <string name="income">Income</string>
+    <string name="expense">Expense</string>
+    <string name="tags">Tags</string>
+    <string name="suggested_tags">Suggested Tags</string>
+    <string name="add_all">Add All Suggested Tags</string>
+    <string name="notes">Notes</string>
+    <string name="invalid_amount">Invalid amount number</string>
 </resources>

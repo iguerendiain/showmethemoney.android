@@ -31,7 +31,7 @@ public class StringUtils {
     }
 
     public static String floatToStringLocalized(Context ctx, float number){
-        return formatLocalized(ctx, "%f", number);
+        return formatLocalized(ctx, "%.2f", number);
     }
 
     public static String formatMoneyLocalized(Context ctx, String symbol, float amount){
