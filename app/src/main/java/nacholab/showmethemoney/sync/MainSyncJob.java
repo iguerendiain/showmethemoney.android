@@ -5,7 +5,7 @@ import android.app.job.JobService;
 
 public class MainSyncJob extends JobService implements MainSyncTask.Listener {
 
-    public static final int CYCLE_TIME = 60 * 5 * 1000;
+    public static final int CYCLE_TIME = 10000; //60 * 5 * 1000;
 
     private MainSyncTask task;
 

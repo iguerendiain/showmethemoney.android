@@ -38,7 +38,7 @@ public class MainApplication extends Application{
         apiClient = new APIClient(this);
 
 //        scheduleCurrencyUpdate();
-//        scheduleMainSync();
+        scheduleMainSync();
 
         // Update all on start
         if (session.isAuthenticated()) {

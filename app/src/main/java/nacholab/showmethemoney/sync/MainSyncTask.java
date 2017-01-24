@@ -2,6 +2,7 @@ package nacholab.showmethemoney.sync;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -10,6 +11,7 @@ import nacholab.showmethemoney.model.MainSyncData;
 
 public class MainSyncTask extends AsyncTask<Void, Void, Void>{
 
+    private static final String TAG = MainSyncTask.class.getSimpleName();
     private final Context ctx;
     private final Listener listener;
 
@@ -26,6 +28,7 @@ public class MainSyncTask extends AsyncTask<Void, Void, Void>{
     @Override
     protected Void doInBackground(Void... params) {
         try {
+            Log.d(TAG, "Running Main Sync");
             MainApplication app = (MainApplication) ctx.getApplicationContext();
 
             MainSyncData uploadPayload = app.getDal().buildUploadMainSyncData(app.getSettings().getLastSync());
@@ -34,8 +37,10 @@ public class MainSyncTask extends AsyncTask<Void, Void, Void>{
             app.getDal().cleanDeleted();
             MainSyncData downloadPayload = app.getApiClient().getMainSyncData();
             app.getDal().saveOrUpdateMainSyncData(downloadPayload);
+            Log.d(TAG, "Main Sync succesful");
 
         } catch (IOException e) {
+            Log.d(TAG, "Main Sync failed: "+e.getMessage());
             e.printStackTrace();
             if (listener!=null) {
                 listener.onFinish();
