@@ -1,5 +1,6 @@
 package nacholab.showmethemoney.ui.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -153,6 +154,7 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
                 String currency = currentCurrency.getCode();
                 long time = System.currentTimeMillis();
 
+                setResult(Activity.RESULT_OK);
                 if (editingRecord!=null) {
                     getMainApp().getDal().updateRecord(
                         editingRecord.getUuid(),realAmount,recordType,descriptionText,account,currency,time,true

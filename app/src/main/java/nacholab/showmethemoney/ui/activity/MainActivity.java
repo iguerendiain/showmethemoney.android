@@ -1,6 +1,5 @@
 package nacholab.showmethemoney.ui.activity;
 
-import android.content.ContentResolver;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
@@ -18,11 +17,10 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import nacholab.showmethemoney.R;
-import nacholab.showmethemoney.sync.MainSyncTask;
 import nacholab.showmethemoney.ui.fragment.AccountsListFragment;
 import nacholab.showmethemoney.ui.fragment.RecordListFragment;
 
-public class MainActivity extends AuthenticatedActivity implements ViewPager.OnPageChangeListener, View.OnClickListener {
+public class MainActivity extends AuthenticatedActivity implements ViewPager.OnPageChangeListener{
 
     private static final String FRAGMENT_TAG_RECORDS = "records";
     private static final String FRAGMENT_TAG_ACCOUNTS = "accounts";
@@ -30,18 +28,13 @@ public class MainActivity extends AuthenticatedActivity implements ViewPager.OnP
     @BindView(R.id.tabs)SmartTabLayout tabs;
     @BindView(R.id.panes)ViewPager panes;
     @BindView(R.id.title)TextView title;
-    @BindView(R.id.refresh)View refresh;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-        refresh.setOnClickListener(this);
-
         initTabs();
-
         initDefaultTab();
     }
 
@@ -95,17 +88,5 @@ public class MainActivity extends AuthenticatedActivity implements ViewPager.OnP
     @Override
     public void onPageScrollStateChanged(int state) {
 
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.refresh:
-                backendSync();
-        }
-    }
-
-    private void backendSync(){
-        new MainSyncTask(this, null).execute();
     }
 }

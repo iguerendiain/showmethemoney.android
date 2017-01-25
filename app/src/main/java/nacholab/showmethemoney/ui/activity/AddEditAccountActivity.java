@@ -1,5 +1,6 @@
 package nacholab.showmethemoney.ui.activity;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -98,6 +99,7 @@ public class AddEditAccountActivity extends AuthenticatedActivity implements Vie
 
                 if (editingAccount!=null){
                     if (StringUtils.isNotBlank(nameText)) {
+                        setResult(Activity.RESULT_OK);
                         getMainApp().getDal().updateAccount(editingAccount.getUuid(), nameText);
                         finish();
                     }else{
@@ -123,6 +125,7 @@ public class AddEditAccountActivity extends AuthenticatedActivity implements Vie
                         }
 
                         if (validBalance){
+                            setResult(Activity.RESULT_OK);
                             getMainApp().getDal().addAccount(nameText, currency, parsedBalance);
                             finish();
                         }

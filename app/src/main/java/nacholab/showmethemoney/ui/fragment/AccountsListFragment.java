@@ -1,5 +1,6 @@
 package nacholab.showmethemoney.ui.fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,12 +18,15 @@ import butterknife.ButterKnife;
 import nacholab.showmethemoney.R;
 import nacholab.showmethemoney.model.MoneyAccount;
 import nacholab.showmethemoney.model.MoneyRecord;
+import nacholab.showmethemoney.sync.MainSyncTask;
 import nacholab.showmethemoney.ui.activity.AddEditAccountActivity;
 import nacholab.showmethemoney.ui.adapter.AccountAdapter;
 import nacholab.showmethemoney.ui.view.AccountView;
 import nacholab.showmethemoney.utils.DialogHelper;
 
 public class AccountsListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, AccountView.Listener {
+
+    public final static int ADD_EDIT_ACCOUNT_REQUEST_CODE = 1;
 
     @BindView(R.id.list)RecyclerView list;
     @BindView(R.id.add)View add;
@@ -50,7 +54,7 @@ public class AccountsListFragment extends BaseFragment implements SwipeRefreshLa
 
     @Override
     public void onRefresh() {
-        refreshFromDB();
+        new MainSyncTask(getMainApp(), null).execute();
     }
 
     @Override
@@ -104,6 +108,14 @@ public class AccountsListFragment extends BaseFragment implements SwipeRefreshLa
     public void onOpen(MoneyAccount a) {
         Intent i = new Intent(getActivity(), AddEditAccountActivity.class);
         i.putExtra(AddEditAccountActivity.ACCOUNT_UUID, a.getUuid());
-        startActivity(i);
+        startActivityForResult(i, ADD_EDIT_ACCOUNT_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ADD_EDIT_ACCOUNT_REQUEST_CODE && resultCode == Activity.RESULT_OK){
+            refreshFromDB();
+        }
     }
 }

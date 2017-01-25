@@ -19,11 +19,6 @@
                                 android:id="@+id/title"
                                 android:text="A Title that should never be shown"/>
 
-                        <ImageView
-                                style="@style/toolbar_right_action"
-                                android:id="@+id/refresh"
-                                android:src="@drawable/ic_action_navigation_refresh"/>
-
                 </RelativeLayout>
 
                 <com.ogaclejapan.smarttablayout.SmartTabLayout
