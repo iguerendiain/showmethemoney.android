@@ -11,7 +11,7 @@ import nacholab.showmethemoney.model.MainSyncData;
 
 public class MainSyncTask extends AsyncTask<Void, Void, Void>{
 
-    private static final String TAG = MainSyncTask.class.getSimpleName();
+    public static final String TAG = MainSyncTask.class.getSimpleName();
     private final Context ctx;
     private final Listener listener;
 

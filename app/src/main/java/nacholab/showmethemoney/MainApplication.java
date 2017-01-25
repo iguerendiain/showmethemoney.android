@@ -6,6 +6,7 @@ import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
+import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 
@@ -50,6 +51,7 @@ public class MainApplication extends Application{
         new CurrencyUpdaterTask(this, new CurrencyUpdaterTask.Listener() {
             @Override
             public void onFinish() {
+                Log.d(MainSyncTask.TAG, "Starting from initial download");
                 new MainSyncTask(MainApplication.this, null).execute();
             }
         }).execute();
