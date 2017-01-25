@@ -1,6 +1,5 @@
 package nacholab.showmethemoney.sync;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -9,28 +8,20 @@ import java.io.IOException;
 import nacholab.showmethemoney.MainApplication;
 import nacholab.showmethemoney.model.MainSyncData;
 
-public class MainSyncTask extends AsyncTask<Void, Void, Void>{
+public class MainSyncTask extends AsyncTask<Void, Void, Boolean>{
 
     public static final String TAG = MainSyncTask.class.getSimpleName();
-    private final Context ctx;
-    private final Listener listener;
+    private final MainApplication app;
 
-    public interface Listener{
-        void onFinish();
-    }
-
-    public MainSyncTask(Context _ctx, Listener _listener) {
+    public MainSyncTask(MainApplication _app) {
         super();
-        ctx = _ctx;
-        listener = _listener;
+        app = _app;
     }
 
     @Override
-    protected Void doInBackground(Void... params) {
+    protected Boolean doInBackground(Void... params) {
         try {
             Log.d(TAG, "Running Main Sync");
-            MainApplication app = (MainApplication) ctx.getApplicationContext();
-
             MainSyncData uploadPayload = app.getDal().buildUploadMainSyncData(app.getSettings().getLastSync());
             app.getApiClient().postMainSyncData(uploadPayload);
             app.getDal().setSynced(uploadPayload, true);
@@ -42,14 +33,23 @@ public class MainSyncTask extends AsyncTask<Void, Void, Void>{
         } catch (IOException e) {
             Log.d(TAG, "Main Sync failed: "+e.getMessage());
             e.printStackTrace();
-            if (listener!=null) {
-                listener.onFinish();
-            }
+            return false;
         }
 
-        if (listener!=null) {
-            listener.onFinish();
+        return true;
+    }
+
+    @Override
+    protected void onPostExecute(Boolean result) {
+        super.onPostExecute(result);
+        app.getOtto().post(new Event(result));
+    }
+
+    public class Event{
+        public final boolean success;
+
+        Event(boolean s){
+            success = s;
         }
-        return null;
     }
 }

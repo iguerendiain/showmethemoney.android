@@ -11,18 +11,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.otto.Subscribe;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import nacholab.showmethemoney.R;
 import nacholab.showmethemoney.model.MoneyRecord;
 import nacholab.showmethemoney.sync.MainSyncTask;
-import nacholab.showmethemoney.ui.activity.AddEditAccountActivity;
 import nacholab.showmethemoney.ui.activity.AddEditRecordActivity;
 import nacholab.showmethemoney.ui.adapter.RecordAdapter;
 import nacholab.showmethemoney.ui.view.RecordView;
 import nacholab.showmethemoney.utils.DialogHelper;
 
-public class RecordListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, RecordView.Listener {
+public class RecordListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, RecordView.Listener{
 
     private final static int ADD_EDIT_RECORD_REQUEST_CODE = 1;
 
@@ -52,7 +53,7 @@ public class RecordListFragment extends BaseFragment implements SwipeRefreshLayo
 
     @Override
     public void onRefresh() {
-        new MainSyncTask(getMainApp(), null).execute();
+        new MainSyncTask(getMainApp()).execute();
     }
 
     @Override
@@ -106,5 +107,12 @@ public class RecordListFragment extends BaseFragment implements SwipeRefreshLayo
             refreshFromDB();
         }
 
+    }
+
+    @Subscribe
+    public void onSyncFinish(MainSyncTask.Event ev) {
+        if (isVisible()){
+            refreshFromDB();
+        }
     }
 }

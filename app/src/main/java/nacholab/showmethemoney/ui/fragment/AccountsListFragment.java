@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.otto.Subscribe;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -24,7 +26,7 @@ import nacholab.showmethemoney.ui.adapter.AccountAdapter;
 import nacholab.showmethemoney.ui.view.AccountView;
 import nacholab.showmethemoney.utils.DialogHelper;
 
-public class AccountsListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, AccountView.Listener {
+public class AccountsListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener, AccountView.Listener{
 
     public final static int ADD_EDIT_ACCOUNT_REQUEST_CODE = 1;
 
@@ -54,7 +56,7 @@ public class AccountsListFragment extends BaseFragment implements SwipeRefreshLa
 
     @Override
     public void onRefresh() {
-        new MainSyncTask(getMainApp(), null).execute();
+        new MainSyncTask(getMainApp()).execute();
     }
 
     @Override
@@ -115,6 +117,13 @@ public class AccountsListFragment extends BaseFragment implements SwipeRefreshLa
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ADD_EDIT_ACCOUNT_REQUEST_CODE && resultCode == Activity.RESULT_OK){
+            refreshFromDB();
+        }
+    }
+
+    @Subscribe
+    public void onSyncFinish(MainSyncTask.Event ev) {
+        if (isVisible()){
             refreshFromDB();
         }
     }

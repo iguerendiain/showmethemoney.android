@@ -1,6 +1,5 @@
 package nacholab.showmethemoney;
 
-import android.accounts.Account;
 import android.app.Application;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -9,6 +8,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
+import com.squareup.otto.Bus;
 
 import nacholab.showmethemoney.api.APIClient;
 import nacholab.showmethemoney.storage.ActiveAndroidDal;
@@ -26,12 +26,15 @@ public class MainApplication extends Application{
     private BaseDal dal;
     private SettingsManager settings;
     private SessionManager session;
+    private Bus otto;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         Stetho.initializeWithDefaults(this);
+
+        otto = new Bus();
 
         settings = new SettingsManager(this);
         session = new SessionManager(this);
@@ -52,7 +55,7 @@ public class MainApplication extends Application{
             @Override
             public void onFinish() {
                 Log.d(MainSyncTask.TAG, "Starting from initial download");
-                new MainSyncTask(MainApplication.this, null).execute();
+                new MainSyncTask(MainApplication.this).execute();
             }
         }).execute();
     }
@@ -91,5 +94,13 @@ public class MainApplication extends Application{
 
     public SessionManager getSession() {
         return session;
+    }
+
+    public Bus getOtto() {
+        return otto;
+    }
+
+    public void setOtto(Bus otto) {
+        this.otto = otto;
     }
 }

@@ -15,4 +15,15 @@ public abstract class BaseFragment extends Fragment{
         return (MainApplication) getActivity().getApplication();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        getMainApp().getOtto().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getMainApp().getOtto().unregister(this);
+    }
 }

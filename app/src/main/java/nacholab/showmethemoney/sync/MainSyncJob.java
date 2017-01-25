@@ -4,7 +4,11 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.util.Log;
 
-public class MainSyncJob extends JobService implements MainSyncTask.Listener {
+import com.squareup.otto.Subscribe;
+
+import nacholab.showmethemoney.MainApplication;
+
+public class MainSyncJob extends JobService {
 
     public static final int CYCLE_TIME = 60 * 5 * 1000;
 
@@ -13,7 +17,7 @@ public class MainSyncJob extends JobService implements MainSyncTask.Listener {
     @Override
     public boolean onStartJob(JobParameters params) {
         Log.d(MainSyncTask.TAG, "Starting from Scheduled Job");
-        task = new MainSyncTask(getApplicationContext(), this);
+        task = new MainSyncTask((MainApplication) getApplicationContext());
         task.execute();
         return true;
     }
@@ -24,8 +28,8 @@ public class MainSyncJob extends JobService implements MainSyncTask.Listener {
         return false;
     }
 
-    @Override
-    public void onFinish() {
+    @Subscribe
+    public void onSyncFinish(MainSyncTask.Event ev) {
         Log.d(MainSyncTask.TAG, "Finished from Scheduled Job");
         jobFinished(null, false);
     }
