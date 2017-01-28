@@ -16,8 +16,8 @@ public abstract class BaseDal {
     public abstract List<Currency> getCurrencies();
     public abstract List<Currency> findCurrencies(String filter);
     public abstract Currency getCurrencyByUUID(String uuid);
-    public abstract MoneyRecord addRecord(int amount, MoneyRecord.Type type, String description, String account, String currency, long time, boolean updateAccountBalance);
-    public abstract MoneyRecord updateRecord(String uuid, int amount, MoneyRecord.Type type, String description, String account, String currency, long time, boolean updateAccountBalance);
+    public abstract MoneyRecord addRecord(int amount, MoneyRecord.Type type, String description, String account, String currency, long time, double lat, double lng, boolean updateAccountBalance);
+    public abstract MoneyRecord updateRecord(String uuid, int amount, MoneyRecord.Type type, String description, String account, String currency, long time, double lat, double lng, boolean updateAccountBalance);
     public abstract MainSyncData buildUploadMainSyncData(long lastSync);
     public abstract void setSynced(MainSyncData data, boolean synced);
     public abstract MoneyAccount addAccount(String name, String currency, int balance);

@@ -1,9 +1,15 @@
 package nacholab.showmethemoney.ui.activity;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -33,6 +39,7 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
     @BindView(R.id.amount) EditText amount;
     @BindView(R.id.description) EditText description;
     @BindView(R.id.createRecord) View createRecord;
+    @BindView(R.id.back) View back;
 
     private List<MoneyAccount> dbAccounts;
     private List<Currency> dbCurrencies;
@@ -49,6 +56,7 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
         setContentView(R.layout.activity_addrecord);
         ButterKnife.bind(this);
         createRecord.setOnClickListener(this);
+        back.setOnClickListener(this);
 
         dbAccounts = getMainApp().getDal().getAccountsByUse();
         dbCurrencies = getMainApp().getDal().getCurrencyByUse();
@@ -125,9 +133,12 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
     @Override
     public void onClick(View view) {
         switch (view.getId()){
+            case R.id.back:
+                onBackPressed();
+                break;
             case R.id.createRecord:
                 int realAmount;
-                int writtenAmount = 0;
+                int writtenAmount;
 
                 if (StringUtils.isNotBlank(amount.getText().toString())) {
                     try {
@@ -157,11 +168,35 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
                 setResult(Activity.RESULT_OK);
                 if (editingRecord!=null) {
                     getMainApp().getDal().updateRecord(
-                        editingRecord.getUuid(),realAmount,recordType,descriptionText,account,currency,time,true
+                        editingRecord.getUuid(),
+                        realAmount,
+                        recordType,
+                        descriptionText,
+                        account,
+                        currency,
+                        time,
+                        editingRecord.getLoclat(),
+                        editingRecord.getLoclng(),
+                        true
                     );
                 }else {
+                    LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                    Location loc=null;
+                    if (locationManager != null) {
+                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                            loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        }
+                    }
+
+                    double lat = 0;
+                    double lng = 0;
+                    if (loc!=null){
+                        lat = loc.getLatitude();
+                        lng = loc.getLongitude();
+                    }
+
                     getMainApp().getDal().addRecord(
-                        realAmount,recordType,descriptionText,account,currency,time,true
+                        realAmount,recordType,descriptionText,account,currency,time,lat,lng,true
                     );
                 }
                 finish();

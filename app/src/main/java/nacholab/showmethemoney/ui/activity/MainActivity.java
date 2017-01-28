@@ -1,7 +1,9 @@
 package nacholab.showmethemoney.ui.activity;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -22,6 +24,8 @@ import nacholab.showmethemoney.ui.fragment.RecordListFragment;
 
 public class MainActivity extends AuthenticatedActivity implements ViewPager.OnPageChangeListener{
 
+    private static final int PERMISSION_REQUEST_CODE = 4776;
+
     private static final String FRAGMENT_TAG_RECORDS = "records";
     private static final String FRAGMENT_TAG_ACCOUNTS = "accounts";
 
@@ -36,6 +40,9 @@ public class MainActivity extends AuthenticatedActivity implements ViewPager.OnP
         ButterKnife.bind(this);
         initTabs();
         initDefaultTab();
+        ActivityCompat.requestPermissions(this, new String[]{
+            Manifest.permission.ACCESS_FINE_LOCATION
+        }, PERMISSION_REQUEST_CODE);
     }
 
     private void initDefaultTab(){

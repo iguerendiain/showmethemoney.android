@@ -23,8 +23,8 @@ public class APIClient {
 
     private static final String TAG = "APICONNECTION";
 
-//    private static final String BASE_URL = "http://192.168.1.2:8050/";
-    private static final String BASE_URL = "http://api.smtm.nacholab.net/";
+    private static final String BASE_URL = "http://192.168.1.2:8050/";
+//    private static final String BASE_URL = "http://api.smtm.nacholab.net/";
 
     private final MainApplication app;
     private Retrofit retrofit;

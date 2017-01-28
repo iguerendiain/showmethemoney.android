@@ -36,6 +36,14 @@ public class MoneyRecord extends DBModel {
     @Column
     private int amount;
 
+    @Expose
+    @Column
+    private double loclat;
+
+    @Expose
+    @Column
+    private double loclng;
+
     public MoneyRecord() {
     }
 
@@ -102,6 +110,22 @@ public class MoneyRecord extends DBModel {
 
     public void setAccountObject(MoneyAccount accountObject) {
         this.accountObject = accountObject;
+    }
+
+    public double getLoclat() {
+        return loclat;
+    }
+
+    public void setLoclat(double loclat) {
+        this.loclat = loclat;
+    }
+
+    public double getLoclng() {
+        return loclng;
+    }
+
+    public void setLoclng(double loclng) {
+        this.loclng = loclng;
     }
 
     @Override

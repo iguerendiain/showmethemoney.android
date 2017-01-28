@@ -1,7 +1,6 @@
 package nacholab.showmethemoney.ui.activity;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,23 +22,34 @@ import nacholab.showmethemoney.model.MoneyAccount;
 import nacholab.showmethemoney.ui.adapter.CurrencyAdapter;
 import nacholab.showmethemoney.ui.view.CurrencyView;
 import nacholab.showmethemoney.utils.DialogHelper;
-import nacholab.showmethemoney.utils.MoneyHelper;
 import nacholab.showmethemoney.utils.StringUtils;
 
 public class AddEditAccountActivity extends AuthenticatedActivity implements View.OnClickListener, CurrencyView.Listener, TextWatcher {
 
     public static final String ACCOUNT_UUID = "uuid";
 
-    @BindView(R.id.name) EditText name;
-    @BindView(R.id.balance) EditText balance;
-    @BindView(R.id.currencies) RecyclerView currencies;
-    @BindView(R.id.createAccount) ImageView createAccount;
-    @BindView(R.id.currency_search) EditText currencySearch;
-    @BindView(R.id.title) TextView title;
-    @BindView(R.id.add_container) View addContainer;
-    @BindView(R.id.edit_container) View editContainer;
-    @BindView(R.id.saved_balance) TextView savedBalance;
-    @BindView(R.id.saved_currency) TextView savedCurrency;
+    @BindView(R.id.name)
+    EditText name;
+    @BindView(R.id.balance)
+    EditText balance;
+    @BindView(R.id.currencies)
+    RecyclerView currencies;
+    @BindView(R.id.createAccount)
+    ImageView createAccount;
+    @BindView(R.id.currency_search)
+    EditText currencySearch;
+    @BindView(R.id.title)
+    TextView title;
+    @BindView(R.id.add_container)
+    View addContainer;
+    @BindView(R.id.edit_container)
+    View editContainer;
+    @BindView(R.id.saved_balance)
+    TextView savedBalance;
+    @BindView(R.id.saved_currency)
+    TextView savedCurrency;
+    @BindView(R.id.back)
+    View back;
 
     private List<Currency> dbCurrencies;
     private MoneyAccount editingAccount;
@@ -53,21 +63,22 @@ public class AddEditAccountActivity extends AuthenticatedActivity implements Vie
         setContentView(R.layout.activity_addaccount);
         ButterKnife.bind(this);
         createAccount.setOnClickListener(this);
+        back.setOnClickListener(this);
 
-        if (getIntent()!=null && getIntent().getExtras()!=null){
+        if (getIntent() != null && getIntent().getExtras() != null) {
             String requestedAccountUUID = getIntent().getExtras().getString(ACCOUNT_UUID);
-            if (requestedAccountUUID!=null){
+            if (requestedAccountUUID != null) {
                 editingAccount = getMainApp().getDal().getAccountByUUID(requestedAccountUUID);
             }
         }
 
-        if (editingAccount!=null){
+        if (editingAccount != null) {
             setEditMode(true);
             name.setText(editingAccount.getName());
             currentCurrency = getMainApp().getDal().getCurrencyByCode(editingAccount.getCurrency());
             savedCurrency.setText(currentCurrency.getName());
-            savedBalance.setText(StringUtils.formatMoneyLocalized(this, currentCurrency.getDisplaySymbol(), editingAccount.getBalance()/100));
-        }else{
+            savedBalance.setText(StringUtils.formatMoneyLocalized(this, currentCurrency.getDisplaySymbol(), editingAccount.getBalance() / 100));
+        } else {
             setEditMode(false);
             dbCurrencies = getMainApp().getDal().getCurrencies();
             currencyAdapter = new CurrencyAdapter(getMainApp(), this);
@@ -77,13 +88,13 @@ public class AddEditAccountActivity extends AuthenticatedActivity implements Vie
         }
     }
 
-    private void setEditMode(boolean editMode){
-        if (editMode){
+    private void setEditMode(boolean editMode) {
+        if (editMode) {
             title.setText(R.string.edit_account);
             createAccount.setImageResource(R.drawable.ic_save);
             editContainer.setVisibility(View.VISIBLE);
             addContainer.setVisibility(View.GONE);
-        }else{
+        } else {
             title.setText(R.string.create_account);
             createAccount.setImageResource(R.drawable.ic_action_action_done);
             editContainer.setVisibility(View.GONE);
@@ -94,19 +105,22 @@ public class AddEditAccountActivity extends AuthenticatedActivity implements Vie
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.back:
+                onBackPressed();
+                break;
             case R.id.createAccount:
                 String nameText = name.getText().toString();
 
-                if (editingAccount!=null){
+                if (editingAccount != null) {
                     if (StringUtils.isNotBlank(nameText)) {
                         setResult(Activity.RESULT_OK);
                         getMainApp().getDal().updateAccount(editingAccount.getUuid(), nameText);
                         finish();
-                    }else{
+                    } else {
                         DialogHelper.showInformationDialog(this, R.string.name_cant_be_empty, R.string.ok, null);
                     }
-                }else {
-                    if (StringUtils.isNotBlank(nameText) && currentCurrency!=null) {
+                } else {
+                    if (StringUtils.isNotBlank(nameText) && currentCurrency != null) {
                         String currency = currentCurrency.getCode();
                         String balanceText = balance.getText().toString();
 
@@ -116,15 +130,15 @@ public class AddEditAccountActivity extends AuthenticatedActivity implements Vie
                             try {
                                 parsedBalance = (int) Math.floor(Float.parseFloat(balanceText) * 100);
                                 validBalance = true;
-                            } catch(Exception e) {
+                            } catch (Exception e) {
                                 DialogHelper.showInformationDialog(this, R.string.invalid_balance, R.string.ok, null);
                             }
-                        }else{
+                        } else {
                             parsedBalance = 0;
                             validBalance = true;
                         }
 
-                        if (validBalance){
+                        if (validBalance) {
                             setResult(Activity.RESULT_OK);
                             getMainApp().getDal().addAccount(nameText, currency, parsedBalance);
                             finish();

@@ -280,7 +280,7 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
-    public MoneyRecord addRecord(int absAmount, MoneyRecord.Type type, String description, String account, String currency, long time, boolean updateAccountBalance) {
+    public MoneyRecord addRecord(int absAmount, MoneyRecord.Type type, String description, String account, String currency, long time, double lat, double lng, boolean updateAccountBalance) {
         MoneyRecord record = new MoneyRecord();
         record.setUuid(BaseDal.buildId());
         record.setType(type);
@@ -294,6 +294,8 @@ public class ActiveAndroidDal extends BaseDal{
         record.setCurrency(currency);
         record.setSynced(false);
         record.setTime(time/1000);
+        record.setLoclat(lat);
+        record.setLoclng(lng);
         record.save();
 
         if (updateAccountBalance){
@@ -307,7 +309,7 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
-    public MoneyRecord updateRecord(String uuid, int amount, MoneyRecord.Type type, String description, String account, String currency, long time, boolean updateAccountBalance) {
+    public MoneyRecord updateRecord(String uuid, int amount, MoneyRecord.Type type, String description, String account, String currency, long time, double lat, double lng, boolean updateAccountBalance) {
         MoneyRecord record = getRecordByUUID(uuid);
         MoneyAccount newAccount = getAccountByUUID(account);
 
@@ -347,6 +349,8 @@ public class ActiveAndroidDal extends BaseDal{
             record.setDescription(description);
             record.setSynced(false);
             record.setCurrency(currency);
+            record.setLoclat(lat);
+            record.setLoclng(lng);
             record.save();
 
             return record;
