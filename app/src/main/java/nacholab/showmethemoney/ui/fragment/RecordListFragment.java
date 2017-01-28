@@ -66,7 +66,7 @@ public class RecordListFragment extends BaseFragment implements SwipeRefreshLayo
 
     private void addNew(){
         Intent i = new Intent(getActivity(), AddEditRecordActivity.class);
-        startActivity(i);
+        startActivityForResult(i, ADD_EDIT_RECORD_REQUEST_CODE);
     }
 
     private void refreshFromDB(){
