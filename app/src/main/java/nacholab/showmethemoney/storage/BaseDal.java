@@ -23,7 +23,7 @@ public abstract class BaseDal {
     public abstract MoneyAccount addAccount(String name, String currency, int balance);
     public abstract MoneyAccount updateAccount(String uuid, String name);
     public abstract void cleanDeleted();
-    public abstract List<MoneyRecord> getRecords(boolean populateCurrencies, boolean populateAccounts);
+    public abstract List<MoneyRecord> getRecords(boolean populateCurrencies, boolean populateAccounts, boolean populateTags);
     public abstract List<MoneyRecord> getRecordsByCurrency(Currency c);
     public abstract List<MoneyRecord> getRecordsByAccount(MoneyAccount a);
     public abstract MoneyRecord getRecordByUUID(String uuid);
@@ -33,6 +33,8 @@ public abstract class BaseDal {
     public abstract Currency getCurrencyByCode(String code);
     public abstract List<MoneyAccount> getAccountsByUse();
     public abstract List<Currency> getCurrencyByUse();
+    public abstract void saveTags(String record, String[] tags);
+    public abstract String[] findSuggestedTags(int amount, long time, double lat, double lng);
 
     static String buildId(){
         return UUID.randomUUID().toString();

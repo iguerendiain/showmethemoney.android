@@ -71,7 +71,7 @@ public class RecordListFragment extends BaseFragment implements SwipeRefreshLayo
 
     private void refreshFromDB(){
         adapter.clear();
-        adapter.add(getMainApp().getDal().getRecords(true, true));
+        adapter.add(getMainApp().getDal().getRecords(true, true, true));
         adapter.notifyDataSetChanged();
         refresh.setRefreshing(false);
     }

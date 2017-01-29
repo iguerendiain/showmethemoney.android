@@ -1,8 +1,10 @@
 package nacholab.showmethemoney.storage;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.icu.text.AlphabeticIndex;
+import android.text.TextUtils;
 
 import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Cache;
@@ -35,7 +37,11 @@ public class ActiveAndroidDal extends BaseDal{
     private static final String SYNCED = "synced";
     private static final String DELETED = "deleted";
     private static final String ACCOUNT = "account";
+    private static final String RECORD = "record";
+    private static final String TAG = "tag";
+    private static final String TAG_RECORD = "tag_record";
     private static final String TIME = "time";
+    private static final String ID = "id";
     private static final String WHERE_SYNCED_AND_DELETED = SYNCED+"=? and "+DELETED+"=?";
     private static final String WHERE_DELETED = DELETED+"=?";
     private static final String TRUE = "1";
@@ -48,12 +54,21 @@ public class ActiveAndroidDal extends BaseDal{
     public ActiveAndroidDal(Context context) {
         Configuration.Builder configurationBuilder = new Configuration.Builder(context);
         ActiveAndroid.initialize(configurationBuilder.create(), true);
+        ensureTagTables();
+    }
+
+    private void ensureTagTables(){
+        ActiveAndroid.execSQL("create table if not exists "+TAG+" ("+ID+" integer primary key not null, "+TAG+" varchar(64) not null unique)");
+        ActiveAndroid.execSQL("create table if not exists "+TAG_RECORD+" ("+RECORD+" char(36) not null, "+TAG+" int not null)");
     }
 
     private static void truncate(Class<? extends Model> type){
-        TableInfo tableInfo = Cache.getTableInfo(type);
-        ActiveAndroid.execSQL(String.format("DELETE FROM %s;",tableInfo.getTableName()));
-        ActiveAndroid.execSQL(String.format("DELETE FROM sqlite_sequence WHERE name='%s';",tableInfo.getTableName()));
+        truncate(Cache.getTableName(type));
+    }
+
+    private static void truncate(String table){
+        ActiveAndroid.execSQL(String.format("DELETE FROM %s;",table));
+        ActiveAndroid.execSQL(String.format("DELETE FROM sqlite_sequence WHERE name='%s';",table));
     }
 
     @Override
@@ -72,6 +87,7 @@ public class ActiveAndroidDal extends BaseDal{
             try {
                 truncate(MoneyRecord.class);
                 truncate(MoneyAccount.class);
+                truncate(TAG);
 
                 if (accountsCount>0)for (MoneyAccount a : accounts) {
                     a.save();
@@ -79,6 +95,9 @@ public class ActiveAndroidDal extends BaseDal{
 
                 if (recordsCount>0)for (MoneyRecord r : records) {
                     r.save();
+                    if (r.getTags()!=null && r.getTags().length>0) {
+                        saveTags(r.getUuid(), r.getTags());
+                    }
                 }
 
                 ActiveAndroid.setTransactionSuccessful();
@@ -86,6 +105,43 @@ public class ActiveAndroidDal extends BaseDal{
                 ActiveAndroid.endTransaction();
             }
         }
+    }
+
+    // I don't care about the localization since I'm using String.format for building SQL queries
+    @Override
+    @SuppressLint("DefaultLocale")
+    public void saveTags(String recordUUID, String[] tags){
+        String[] tagValues = new String[tags.length];
+        String[] tagsEscaped = new String[tags.length];
+
+        for (int t=0; t<tags.length; t++) {
+            tagsEscaped[t] = "'"+tags[t]+"'";
+            tagValues[t] = "(" + tagsEscaped[t] + ")";
+        }
+
+        ActiveAndroid.execSQL("insert or replace into "+TAG+" ("+TAG+") values "+ TextUtils.join(",",tagValues));
+        Cursor savedTags = ActiveAndroid.getDatabase().rawQuery("select "+ID+" from "+TAG+" where "+TAG+" in ("+TextUtils.join(",",tagsEscaped)+")",null);
+        int[] tagIds = new int[savedTags.getCount()];
+        while (savedTags.moveToNext()){
+            tagIds[savedTags.getPosition()] = savedTags.getInt(0);
+        }
+
+        savedTags.close();
+
+        ActiveAndroid.execSQL("delete from "+TAG_RECORD+" where "+RECORD+"= '"+recordUUID+"'");
+
+        String[] rowsToInsert = new String[tagIds.length];
+
+        for (int t=0; t<tagIds.length; t++){
+            rowsToInsert[t] = String.format("('%s',%d)",recordUUID, tagIds[t]);
+        }
+
+        ActiveAndroid.execSQL("insert into "+TAG_RECORD+" ("+RECORD+","+TAG+") values "+ TextUtils.join(",",rowsToInsert));
+    }
+
+    @Override
+    public String[] findSuggestedTags(int amount, long time, double lat, double lng) {
+        return null;
     }
 
     @Override
@@ -192,21 +248,28 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     @Override
-    public List<MoneyRecord> getRecords(boolean populateCurrencies, boolean populateAccounts) {
+    public List<MoneyRecord> getRecords(boolean populateCurrencies, boolean populateAccounts, boolean populateTags) {
 
-        if (populateCurrencies || populateAccounts){
+        if (populateCurrencies || populateAccounts) {
             String query = "select r.*";
-            String currenciesProjection = ", c."+CODE+", c."+FACTOR+", c."+NAME+" as "+CURRENCY+"_"+NAME+", c."+SYMBOL;
-            String accountsProjection = ", a."+NAME+" as "+ACCOUNT+"_"+NAME+", a."+CURRENCY+" as "+ACCOUNT+"_"+CURRENCY+", a."+BALANCE;
-            String currenciesSelection = " left join "+Cache.getTableName(Currency.class)+" c on r."+CURRENCY+"=c."+CODE;
-            String accountsSelection = " left join "+Cache.getTableName(MoneyAccount.class)+" a on r."+ACCOUNT+"=a."+UUID;
+            String currenciesProjection = ", c." + CODE + ", c." + FACTOR + ", c." + NAME + " as " + CURRENCY + "_" + NAME + ", c." + SYMBOL;
+            String accountsProjection = ", a." + NAME + " as " + ACCOUNT + "_" + NAME + ", a." + CURRENCY + " as " + ACCOUNT + "_" + CURRENCY + ", a." + BALANCE;
+            String tagsProjection = ", group_concat(t." + TAG + ") as "+TAG+"_"+TAG;
+            String currenciesSelection = " left join " + Cache.getTableName(Currency.class) + " c on r." + CURRENCY + "=c." + CODE;
+            String accountsSelection = " left join " + Cache.getTableName(MoneyAccount.class) + " a on r." + ACCOUNT + "=a." + UUID;
+            String tagsSelection = " left join " + TAG_RECORD + " x on x." + RECORD + " = r." + UUID + " left join " + TAG + " t on t." + ID + " = x." + TAG;
+            String tagsGroupBy = " group by r."+UUID;
 
-            if (populateCurrencies){
-                query+=currenciesProjection;
+            if (populateCurrencies) {
+                query += currenciesProjection;
             }
 
-            if (populateAccounts){
-                query+=accountsProjection;
+            if (populateAccounts) {
+                query += accountsProjection;
+            }
+
+            if (populateTags){
+                query += tagsProjection;
             }
 
             query+=" from "+Cache.getTableName(MoneyRecord.class)+" r";
@@ -219,7 +282,17 @@ public class ActiveAndroidDal extends BaseDal{
                 query+=accountsSelection;
             }
 
-            query+=" where r."+DELETED+" = "+FALSE+" order by "+TIME+" desc";
+            if (populateTags){
+                query+=tagsSelection;
+            }
+
+            query+=" where r."+DELETED+" = "+FALSE;
+
+            if (populateTags){
+                query+=tagsGroupBy;
+            }
+
+            query+=" order by "+TIME+" desc";
 
             Cursor recordsPopulated = ActiveAndroid.getDatabase().rawQuery(query, null);
 
@@ -241,6 +314,14 @@ public class ActiveAndroidDal extends BaseDal{
                     account.loadFromCursor(recordsPopulated);
                     account.setName(recordsPopulated.getString(recordsPopulated.getColumnIndex(ACCOUNT+"_"+NAME)));
                     record.setAccountObject(account);
+                }
+
+                if (populateTags){
+                    String rawTags = recordsPopulated.getString(recordsPopulated.getColumnIndex(TAG+"_"+TAG));
+                    if (rawTags!=null) {
+                        String[] tags = rawTags.split(",");
+                        record.setTags(tags);
+                    }
                 }
 
                 records.add(record);
@@ -276,7 +357,24 @@ public class ActiveAndroidDal extends BaseDal{
 
     @Override
     public MoneyRecord getRecordByUUID(String uuid) {
-        return new Select().from(MoneyRecord.class).where(WHERE_DELETED, FALSE).where(WHERE_UUID, uuid).executeSingle();
+        String query =
+            "select r.*, group_concat(t." + TAG + ") as "+TAG+"_"+TAG+
+            " from "+Cache.getTableName(MoneyRecord.class)+" r"+
+            " left join " + TAG_RECORD + " x on x." + RECORD + " = r." + UUID +
+            " left join " + TAG + " t on t." + ID + " = x." + TAG +
+            " where "+WHERE_DELETED+" and "+WHERE_UUID +
+            " group by r."+UUID;
+
+        Cursor recordCursor = ActiveAndroid.getDatabase().rawQuery(query, new String[]{FALSE, uuid});
+
+        MoneyRecord record = new MoneyRecord();
+        recordCursor.moveToFirst();
+        record.loadFromCursor(recordCursor);
+        String[] tags = recordCursor.getString(recordCursor.getColumnIndex(TAG+"_"+TAG)).split(",");
+        record.setTags(tags);
+        recordCursor.close();
+
+        return record;
     }
 
     @Override

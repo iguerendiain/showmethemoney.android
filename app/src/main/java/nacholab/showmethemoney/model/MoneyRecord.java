@@ -44,6 +44,9 @@ public class MoneyRecord extends DBModel {
     @Column
     private double loclng;
 
+    @Expose
+    private String[] tags;
+
     public MoneyRecord() {
     }
 
@@ -126,6 +129,14 @@ public class MoneyRecord extends DBModel {
 
     public void setLoclng(double loclng) {
         this.loclng = loclng;
+    }
+
+    public String[] getTags() {
+        return tags;
+    }
+
+    public void setTags(String[] tags) {
+        this.tags = tags;
     }
 
     @Override
