@@ -35,6 +35,7 @@ public abstract class BaseDal {
     public abstract List<Currency> getCurrencyByUse();
     public abstract void saveTags(String record, String[] tags);
     public abstract String[] findSuggestedTags(int amount, long time, double lat, double lng);
+    public abstract String[] findTagsByUsage();
 
     static String buildId(){
         return UUID.randomUUID().toString();

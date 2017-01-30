@@ -60,7 +60,7 @@ public class AddEditAccountActivity extends AuthenticatedActivity implements Vie
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_addaccount);
+        setContentView(R.layout.activity_addeditaccount);
         ButterKnife.bind(this);
         createAccount.setOnClickListener(this);
         back.setOnClickListener(this);

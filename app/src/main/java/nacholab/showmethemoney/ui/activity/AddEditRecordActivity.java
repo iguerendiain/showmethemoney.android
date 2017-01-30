@@ -9,8 +9,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
@@ -25,6 +26,8 @@ import nacholab.showmethemoney.model.MoneyAccount;
 import nacholab.showmethemoney.model.MoneyRecord;
 import nacholab.showmethemoney.ui.adapter.AccountChooserAdapter;
 import nacholab.showmethemoney.ui.adapter.CurrencyChooserAdapter;
+import nacholab.showmethemoney.ui.view.TagView;
+import nacholab.showmethemoney.ui.view.TagsInputView;
 import nacholab.showmethemoney.utils.MoneyHelper;
 import nacholab.showmethemoney.utils.StringUtils;
 
@@ -40,6 +43,8 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
     @BindView(R.id.description) EditText description;
     @BindView(R.id.createRecord) View createRecord;
     @BindView(R.id.back) View back;
+    @BindView(R.id.tagsInput) TagsInputView tagsInput;
+    @BindView(R.id.suggested_tags) ViewGroup suggestedTagsContainer;
 
     private List<MoneyAccount> dbAccounts;
     private List<Currency> dbCurrencies;
@@ -53,7 +58,7 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_addrecord);
+        setContentView(R.layout.activity_addeditrecord);
         ButterKnife.bind(this);
         createRecord.setOnClickListener(this);
         back.setOnClickListener(this);
@@ -66,6 +71,17 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
 
         currencyChooser.setAdapter(new CurrencyChooserAdapter(this, dbCurrencies));
         currencyChooser.addOnPageChangeListener(new CurrencyListener());
+
+        ArrayAdapter tagsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, getMainApp().getDal().findTagsByUsage());
+        tagsInput.setAdapter(tagsAdapter);
+
+        String[] suggestedTags = getMainApp().getDal().findSuggestedTags(-1,-1,-1,-1);
+
+        for (String tag : suggestedTags){
+            TagView tagView = new TagView(this);
+            tagView.setText(tag);
+            suggestedTagsContainer.addView(tagView);
+        }
 
         if (getIntent()!=null && getIntent().getExtras()!=null){
             String requestedRecordUUID = getIntent().getExtras().getString(RECORD_UUID);

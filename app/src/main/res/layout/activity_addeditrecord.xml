@@ -125,16 +125,23 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!--TextView
+            <TextView
                 android:text="@string/tags"
                 style="@style/form_field_title"/>
 
-            <RelativeLayout
-                style="@style/input_text"
+            <nacholab.showmethemoney.ui.view.TagsInputView
+                android:id="@+id/tagsInput"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:gravity="top"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/input_bg"
                 android:layout_width="match_parent"
-                android:layout_height="75dp">
-
-            </RelativeLayout>
+                android:layout_height="75dp"/>
 
             <TextView
                 android:text="@string/suggested_tags"
@@ -142,20 +149,19 @@
                 android:layout_width="wrap_content"
                 style="@style/form_field_title"/>
 
-            <RelativeLayout
+            <org.apmem.tools.layouts.FlowLayout
+                    android:id="@+id/suggested_tags"
                     style="@style/input_text"
                     android:layout_marginBottom="0dp"
                     android:layout_width="match_parent"
-                    android:layout_height="75dp">
-
-            </RelativeLayout>
+                    android:layout_height="wrap_content"/>
 
             <Button
                     android:text="@string/add_all"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/-->
+                    android:layout_height="wrap_content"/>
 
             <TextView
                     android:text="@string/notes"

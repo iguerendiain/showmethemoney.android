@@ -22,6 +22,7 @@ import nacholab.showmethemoney.model.Currency;
 import nacholab.showmethemoney.model.MainSyncData;
 import nacholab.showmethemoney.model.MoneyAccount;
 import nacholab.showmethemoney.model.MoneyRecord;
+import nacholab.showmethemoney.utils.IntentHelper;
 import nacholab.showmethemoney.utils.StringUtils;
 
 public class ActiveAndroidDal extends BaseDal{
@@ -141,7 +142,26 @@ public class ActiveAndroidDal extends BaseDal{
 
     @Override
     public String[] findSuggestedTags(int amount, long time, double lat, double lng) {
-        return null;
+        return findTagsByUsage();
+    }
+
+    @Override
+    public String[] findTagsByUsage() {
+        String query =
+            "select t."+TAG+",count(1) usecount "+
+            "from "+TAG+" t "+
+            "left join "+TAG_RECORD+" x on x."+TAG+" = t."+ID+
+            " group by t."+ID+
+            " order by usecount desc, t."+TAG+" asc";
+
+        Cursor tagsCursor = ActiveAndroid.getDatabase().rawQuery(query,null);
+        String[] tags = new String[tagsCursor.getCount()];
+        while (tagsCursor.moveToNext()){
+            tags[tagsCursor.getPosition()] = tagsCursor.getString(0);
+        }
+        tagsCursor.close();
+
+        return tags;
     }
 
     @Override
@@ -333,8 +353,6 @@ public class ActiveAndroidDal extends BaseDal{
         }else {
             return new Select().from(MoneyRecord.class).where(WHERE_DELETED, FALSE).execute();
         }
-
-
     }
 
     @Override
