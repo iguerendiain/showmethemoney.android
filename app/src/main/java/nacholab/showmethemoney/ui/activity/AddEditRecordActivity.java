@@ -45,6 +45,7 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
     @BindView(R.id.back) View back;
     @BindView(R.id.tagsInput) TagsInputView tagsInput;
     @BindView(R.id.suggested_tags) ViewGroup suggestedTagsContainer;
+    @BindView(R.id.add_suggested_tags) View addSuggestedTags;
 
     private List<MoneyAccount> dbAccounts;
     private List<Currency> dbCurrencies;
@@ -54,6 +55,7 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
     private Currency accountCurrency;
 
     private MoneyRecord editingRecord;
+    private ArrayAdapter<String> tagsAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,16 +74,25 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
         currencyChooser.setAdapter(new CurrencyChooserAdapter(this, dbCurrencies));
         currencyChooser.addOnPageChangeListener(new CurrencyListener());
 
-        ArrayAdapter tagsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, getMainApp().getDal().findTagsByUsage());
+        tagsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, getMainApp().getDal().findTagsByUsage());
         tagsInput.setAdapter(tagsAdapter);
+        tagsInput.allowDuplicates(false);
 
         String[] suggestedTags = getMainApp().getDal().findSuggestedTags(-1,-1,-1,-1);
 
-        for (String tag : suggestedTags){
+        for (final String tag : suggestedTags){
             TagView tagView = new TagView(this);
             tagView.setText(tag);
+            tagView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    tagsInput.addObject(tag);
+                }
+            });
             suggestedTagsContainer.addView(tagView);
         }
+
+        addSuggestedTags.setOnClickListener(this);
 
         if (getIntent()!=null && getIntent().getExtras()!=null){
             String requestedRecordUUID = getIntent().getExtras().getString(RECORD_UUID);
@@ -120,6 +131,12 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
             }
 
             description.setText(editingRecord.getDescription());
+
+            if (editingRecord.getTags()!=null && editingRecord.getTags().length > 0){
+                for (String tag : editingRecord.getTags()){
+                    tagsInput.addObject(tag);
+                }
+            }
         }else{
             setAccount(0);
             expense.setChecked(true);
@@ -146,9 +163,18 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
         currentCurrency = dbCurrencies.get(idx);
     }
 
+    private void addAllSuggestedTags(){
+        for (int t=0; t<tagsAdapter.getCount(); t++){
+            tagsInput.addObject(tagsAdapter.getItem(t));
+        }
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()){
+            case R.id.add_suggested_tags:
+                addAllSuggestedTags();
+                break;
             case R.id.back:
                 onBackPressed();
                 break;
@@ -180,6 +206,10 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
                 String account = currentAccount.getUuid();
                 String currency = currentCurrency.getCode();
                 long time = System.currentTimeMillis();
+                String[] tags = null;
+                if (tagsInput.getObjects()!=null && tagsInput.getObjects().size()>0) {
+                    tags = tagsInput.getObjects().toArray(new String[tagsInput.getObjects().size()]);
+                }
 
                 setResult(Activity.RESULT_OK);
                 if (editingRecord!=null) {
@@ -195,6 +225,8 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
                         editingRecord.getLoclng(),
                         true
                     );
+
+                    getMainApp().getDal().saveTags(editingRecord.getUuid(), tags);
                 }else {
                     LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
                     Location loc=null;
@@ -211,10 +243,12 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
                         lng = loc.getLongitude();
                     }
 
-                    getMainApp().getDal().addRecord(
-                        realAmount,recordType,descriptionText,account,currency,time,lat,lng,true
+                    MoneyRecord savedRecord = getMainApp().getDal().addRecord(
+                            realAmount, recordType, descriptionText, account, currency, time, lat, lng, true
                     );
+                    getMainApp().getDal().saveTags(savedRecord.getUuid(), tags);
                 }
+
                 finish();
         }
     }

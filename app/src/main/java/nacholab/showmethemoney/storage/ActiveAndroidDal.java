@@ -112,32 +112,33 @@ public class ActiveAndroidDal extends BaseDal{
     @Override
     @SuppressLint("DefaultLocale")
     public void saveTags(String recordUUID, String[] tags){
-        String[] tagValues = new String[tags.length];
-        String[] tagsEscaped = new String[tags.length];
+        ActiveAndroid.execSQL("delete from " + TAG_RECORD + " where " + RECORD + "= '" + recordUUID + "'");
 
-        for (int t=0; t<tags.length; t++) {
-            tagsEscaped[t] = "'"+tags[t]+"'";
-            tagValues[t] = "(" + tagsEscaped[t] + ")";
+        if (tags!=null && tags.length>0) {
+            String[] tagValues = new String[tags.length];
+            String[] tagsEscaped = new String[tags.length];
+
+            for (int t = 0; t < tags.length; t++) {
+                tagsEscaped[t] = "'" + tags[t] + "'";
+                tagValues[t] = "(" + tagsEscaped[t] + ")";
+            }
+
+            ActiveAndroid.execSQL("insert or replace into " + TAG + " (" + TAG + ") values " + TextUtils.join(",", tagValues));
+            Cursor savedTags = ActiveAndroid.getDatabase().rawQuery("select " + ID + " from " + TAG + " where " + TAG + " in (" + TextUtils.join(",", tagsEscaped) + ")", null);
+            int[] tagIds = new int[savedTags.getCount()];
+            while (savedTags.moveToNext()) {
+                tagIds[savedTags.getPosition()] = savedTags.getInt(0);
+            }
+            savedTags.close();
+
+            String[] rowsToInsert = new String[tagIds.length];
+
+            for (int t = 0; t < tagIds.length; t++) {
+                rowsToInsert[t] = String.format("('%s',%d)", recordUUID, tagIds[t]);
+            }
+
+            ActiveAndroid.execSQL("insert into " + TAG_RECORD + " (" + RECORD + "," + TAG + ") values " + TextUtils.join(",", rowsToInsert));
         }
-
-        ActiveAndroid.execSQL("insert or replace into "+TAG+" ("+TAG+") values "+ TextUtils.join(",",tagValues));
-        Cursor savedTags = ActiveAndroid.getDatabase().rawQuery("select "+ID+" from "+TAG+" where "+TAG+" in ("+TextUtils.join(",",tagsEscaped)+")",null);
-        int[] tagIds = new int[savedTags.getCount()];
-        while (savedTags.moveToNext()){
-            tagIds[savedTags.getPosition()] = savedTags.getInt(0);
-        }
-
-        savedTags.close();
-
-        ActiveAndroid.execSQL("delete from "+TAG_RECORD+" where "+RECORD+"= '"+recordUUID+"'");
-
-        String[] rowsToInsert = new String[tagIds.length];
-
-        for (int t=0; t<tagIds.length; t++){
-            rowsToInsert[t] = String.format("('%s',%d)",recordUUID, tagIds[t]);
-        }
-
-        ActiveAndroid.execSQL("insert into "+TAG_RECORD+" ("+RECORD+","+TAG+") values "+ TextUtils.join(",",rowsToInsert));
     }
 
     @Override
@@ -388,8 +389,11 @@ public class ActiveAndroidDal extends BaseDal{
         MoneyRecord record = new MoneyRecord();
         recordCursor.moveToFirst();
         record.loadFromCursor(recordCursor);
-        String[] tags = recordCursor.getString(recordCursor.getColumnIndex(TAG+"_"+TAG)).split(",");
-        record.setTags(tags);
+        String rawTags = recordCursor.getString(recordCursor.getColumnIndex(TAG+"_"+TAG));
+        if (StringUtils.isNotBlank(rawTags)) {
+            String[] tags = recordCursor.getString(recordCursor.getColumnIndex(TAG + "_" + TAG)).split(",");
+            record.setTags(tags);
+        }
         recordCursor.close();
 
         return record;
