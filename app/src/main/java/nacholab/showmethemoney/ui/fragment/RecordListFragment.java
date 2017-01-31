@@ -65,8 +65,12 @@ public class RecordListFragment extends BaseFragment implements SwipeRefreshLayo
     }
 
     private void addNew(){
-        Intent i = new Intent(getActivity(), AddEditRecordActivity.class);
-        startActivityForResult(i, ADD_EDIT_RECORD_REQUEST_CODE);
+        if (getMainApp().getDal().getAccounts(false).size() > 0) {
+            Intent i = new Intent(getActivity(), AddEditRecordActivity.class);
+            startActivityForResult(i, ADD_EDIT_RECORD_REQUEST_CODE);
+        }else{
+            DialogHelper.showInformationDialog(getContext(), R.string.cant_add_record_no_accounts, R.string.ok, null);
+        }
     }
 
     private void refreshFromDB(){

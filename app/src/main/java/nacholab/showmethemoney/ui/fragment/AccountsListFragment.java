@@ -68,12 +68,8 @@ public class AccountsListFragment extends BaseFragment implements SwipeRefreshLa
     }
 
     private void addNew(){
-        if (getMainApp().getDal().getAccounts(false).size() > 0) {
-            Intent i = new Intent(getActivity(), AddEditAccountActivity.class);
-            startActivityForResult(i, ADD_EDIT_ACCOUNT_REQUEST_CODE);
-        }else{
-            DialogHelper.showInformationDialog(getContext(), R.string.cant_add_record_no_accounts, R.string.ok, null);
-        }
+        Intent i = new Intent(getActivity(), AddEditAccountActivity.class);
+        startActivityForResult(i, ADD_EDIT_ACCOUNT_REQUEST_CODE);
     }
 
     private void refreshFromDB(){

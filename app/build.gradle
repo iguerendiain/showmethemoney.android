@@ -9,8 +9,8 @@ android {
         applicationId "nacholab.showmethemoney"
         minSdkVersion 21
         targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "20170130b"
 
         resValue "string", "tray__authority", "${applicationId}.tray"
     }
