@@ -62,7 +62,7 @@
 
                                 <EditText
                                         android:id="@+id/balance"
-                                        android:inputType="number"
+                                        android:inputType="numberDecimal"
                                         style="@style/input_text"/>
 
                                 <TextView
