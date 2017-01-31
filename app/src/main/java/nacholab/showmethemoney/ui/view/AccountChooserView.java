@@ -51,7 +51,7 @@ public class AccountChooserView extends RelativeLayout{
                 StringUtils.formatMoneyLocalized(
                         getContext(),
                         account.getCurrency(),
-                        account.getBalance()
+                        account.getBalance()/100
                     )
                 );
 

@@ -28,7 +28,7 @@
     <string name="currency_not_found">Currency not found</string>
     <string name="cant_add_record_no_accounts">Cannot add a new Record when no Accounts exists yet. Please create at least one account before adding Records.</string>
     <string name="create_account">Create Account</string>
-    <string name="account_name_hint">Descriptive name of the currency</string>
+    <string name="account_name_hint">Descriptive name of the account</string>
     <string name="initial_balance">Initial Balance</string>
     <string name="currency">Currency</string>
     <string name="currency_search_hint">Start typing a currency name</string>
