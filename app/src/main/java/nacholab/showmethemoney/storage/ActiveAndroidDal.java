@@ -3,14 +3,12 @@ package nacholab.showmethemoney.storage;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.icu.text.AlphabeticIndex;
 import android.text.TextUtils;
 
 import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Cache;
 import com.activeandroid.Configuration;
 import com.activeandroid.Model;
-import com.activeandroid.TableInfo;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.From;
 import com.activeandroid.query.Select;
@@ -22,7 +20,6 @@ import nacholab.showmethemoney.model.Currency;
 import nacholab.showmethemoney.model.MainSyncData;
 import nacholab.showmethemoney.model.MoneyAccount;
 import nacholab.showmethemoney.model.MoneyRecord;
-import nacholab.showmethemoney.utils.IntentHelper;
 import nacholab.showmethemoney.utils.StringUtils;
 
 public class ActiveAndroidDal extends BaseDal{
@@ -59,7 +56,7 @@ public class ActiveAndroidDal extends BaseDal{
     }
 
     private void ensureTagTables(){
-        ActiveAndroid.execSQL("create table if not exists "+TAG+" ("+ID+" integer primary key not null, "+TAG+" varchar(64) not null unique)");
+        ActiveAndroid.execSQL("create table if not exists "+TAG+" ("+ID+" integer primary key not null, "+TAG+" varchar(64) not null unique on conflict ignore)");
         ActiveAndroid.execSQL("create table if not exists "+TAG_RECORD+" ("+RECORD+" char(36) not null, "+TAG+" int not null)");
     }
 
@@ -123,7 +120,12 @@ public class ActiveAndroidDal extends BaseDal{
                 tagValues[t] = "(" + tagsEscaped[t] + ")";
             }
 
-            ActiveAndroid.execSQL("insert or replace into " + TAG + " (" + TAG + ") values " + TextUtils.join(",", tagValues));
+            // TODO: FIX: This select does not returns the correct ID's for some reason.
+            // TODO: Probably these Id's are being replaced on a future insert. This should
+            // TODO: not be happening, the idea is that the replace does not overwrite the id
+            // TODO: this must be done with on conflict and not insert or replace because
+            // TODO: the id is being replaced :(
+            ActiveAndroid.execSQL("insert into " + TAG + " (" + TAG + ") values " + TextUtils.join(",", tagValues));// + " on conflict ("+TAG+") ignore");
             Cursor savedTags = ActiveAndroid.getDatabase().rawQuery("select " + ID + " from " + TAG + " where " + TAG + " in (" + TextUtils.join(",", tagsEscaped) + ")", null);
             int[] tagIds = new int[savedTags.getCount()];
             while (savedTags.moveToNext()) {

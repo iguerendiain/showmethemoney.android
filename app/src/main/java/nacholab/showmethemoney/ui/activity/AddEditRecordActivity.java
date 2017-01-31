@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -46,6 +47,7 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
     @BindView(R.id.tagsInput) TagsInputView tagsInput;
     @BindView(R.id.suggested_tags) ViewGroup suggestedTagsContainer;
     @BindView(R.id.add_suggested_tags) View addSuggestedTags;
+    @BindView(R.id.title) TextView title;
 
     private List<MoneyAccount> dbAccounts;
     private List<Currency> dbCurrencies;
@@ -102,6 +104,8 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
         }
 
         if (editingRecord!=null){
+            title.setText(R.string.edit_record);
+
             for (int a=0; a<dbAccounts.size(); a++){
                 if (dbAccounts.get(a).getUuid().equals(editingRecord.getAccount())){
                     setAccount(a);
@@ -138,6 +142,7 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
                 }
             }
         }else{
+            title.setText(R.string.create_record);
             setAccount(0);
             expense.setChecked(true);
             amount.requestFocus();
