@@ -7,8 +7,12 @@ import android.support.annotation.Nullable;
 public class AuthenticatedActivity extends BaseActivity {
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onResume() {
+        ensureAuthentication();
+        super.onResume();
+    }
 
+    public void ensureAuthentication(){
         if (!getMainApp().getSession().isAuthenticated()){
             Intent intent = new Intent(this, AuthActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -16,8 +20,5 @@ public class AuthenticatedActivity extends BaseActivity {
             startActivity(intent);
             finish();
         }
-
-        super.onCreate(savedInstanceState);
-
     }
 }

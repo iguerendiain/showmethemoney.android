@@ -120,12 +120,7 @@ public class ActiveAndroidDal extends BaseDal{
                 tagValues[t] = "(" + tagsEscaped[t] + ")";
             }
 
-            // TODO: FIX: This select does not returns the correct ID's for some reason.
-            // TODO: Probably these Id's are being replaced on a future insert. This should
-            // TODO: not be happening, the idea is that the replace does not overwrite the id
-            // TODO: this must be done with on conflict and not insert or replace because
-            // TODO: the id is being replaced :(
-            ActiveAndroid.execSQL("insert into " + TAG + " (" + TAG + ") values " + TextUtils.join(",", tagValues));// + " on conflict ("+TAG+") ignore");
+            ActiveAndroid.execSQL("insert into " + TAG + " (" + TAG + ") values " + TextUtils.join(",", tagValues));
             Cursor savedTags = ActiveAndroid.getDatabase().rawQuery("select " + ID + " from " + TAG + " where " + TAG + " in (" + TextUtils.join(",", tagsEscaped) + ")", null);
             int[] tagIds = new int[savedTags.getCount()];
             while (savedTags.moveToNext()) {
@@ -595,5 +590,14 @@ public class ActiveAndroidDal extends BaseDal{
     @Override
     public Currency getCurrencyByCode(String code) {
         return new Select().from(Currency.class).where(WHERE_DELETED, FALSE).where(WHERE_CODE, code).executeSingle();
+    }
+
+    @Override
+    public void clearAllData() {
+        truncate(Currency.class);
+        truncate(MoneyAccount.class);
+        truncate(MoneyRecord.class);
+        truncate(TAG);
+        truncate(TAG_RECORD);
     }
 }

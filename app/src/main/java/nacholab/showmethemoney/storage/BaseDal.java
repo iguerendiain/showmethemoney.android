@@ -36,6 +36,7 @@ public abstract class BaseDal {
     public abstract void saveTags(String record, String[] tags);
     public abstract String[] findSuggestedTags(int amount, long time, double lat, double lng);
     public abstract String[] findTagsByUsage();
+    public abstract void clearAllData();
 
     static String buildId(){
         return UUID.randomUUID().toString();

@@ -13,6 +13,10 @@ public class DialogHelper {
         void onConfirmationDialogNo();
     }
 
+    public static void showConfirmationDialog(Context context, int msgRes, final ConfirmationListener listener) {
+        showConfirmationDialog(context,context.getString(msgRes),listener);
+    }
+
     public static void showConfirmationDialog(Context context, String msg, final ConfirmationListener listener){
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 
@@ -37,12 +41,7 @@ public class DialogHelper {
     }
 
     public static void showInformationDialog(Context context, int msgRes, int btnRes, final DialogInterface.OnClickListener listener){
-        showInformationDialog(
-                context,
-                context.getResources().getString(msgRes),
-                context.getResources().getString(btnRes),
-                listener
-        );
+        showInformationDialog(context,context.getString(msgRes),context.getString(btnRes),listener);
     }
 
     public static void showInformationDialog(Context context, String msg, String btn, final DialogInterface.OnClickListener listener){
