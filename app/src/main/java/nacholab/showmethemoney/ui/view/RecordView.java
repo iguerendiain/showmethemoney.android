@@ -3,6 +3,7 @@ package nacholab.showmethemoney.ui.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ public class RecordView extends RelativeLayout implements View.OnLongClickListen
     @BindView(R.id.type)ImageView type;
     @BindView(R.id.date) TextView date;
     @BindView(R.id.not_synced) View notSynced;
+    @BindView(R.id.tags_container) ViewGroup tagsContainer;
 
     private Listener listener;
     private MoneyRecord record;
@@ -74,9 +76,18 @@ public class RecordView extends RelativeLayout implements View.OnLongClickListen
 
         description.setText(r.getDescription());
         account.setText(r.getAccountObject().getName());
-        amount.setText(StringUtils.formatMoneyLocalized(getContext(), r.getCurrencyObject().getDisplaySymbol(), r.getAmount()/100f));
+        amount.setText(StringUtils.formatMoneyLocalized(getContext(), r.getAccountObject().getCurrency(), r.getAmount()/100f));
         date.setText(StringUtils.formatDateCompact(getContext(), r.getTime()));
         setSynced(r.isSynced());
+
+        tagsContainer.removeAllViews();
+        if (r.getTags()!=null && r.getTags().length>0){
+            for (String t : r.getTags()){
+                TagView tv = new TagView(getContext());
+                tv.setText(t);
+                tagsContainer.addView(tv);
+            }
+        }
     }
 
 

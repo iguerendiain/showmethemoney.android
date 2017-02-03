@@ -331,6 +331,7 @@ public class ActiveAndroidDal extends BaseDal{
                     MoneyAccount account = new MoneyAccount();
                     account.loadFromCursor(recordsPopulated);
                     account.setName(recordsPopulated.getString(recordsPopulated.getColumnIndex(ACCOUNT+"_"+NAME)));
+                    account.setCurrency(recordsPopulated.getString(recordsPopulated.getColumnIndex(ACCOUNT+"_"+CURRENCY)));
                     record.setAccountObject(account);
                 }
 
