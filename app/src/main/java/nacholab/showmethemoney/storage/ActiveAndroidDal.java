@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 import nacholab.showmethemoney.model.Currency;
 import nacholab.showmethemoney.model.MainSyncData;
@@ -155,6 +157,7 @@ public class ActiveAndroidDal extends BaseDal{
         int toAmount = Math.round(absAmount + absAmount * SettingsManager.SUGGESTED_TAGS_AMOUNT_MARGIN_PERCENT);
 
         Calendar calendar = new GregorianCalendar();
+        calendar.setTimeZone(new SimpleTimeZone(0, "UTC"));
         calendar.setTimeInMillis(time * 1000);
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int fromHours = hour - SettingsManager.SUGGESTED_TAGS_TIME_MARGIN_HOURS;
@@ -165,26 +168,21 @@ public class ActiveAndroidDal extends BaseDal{
             " from "+TAG+" t "+
             "left join "+TAG_RECORD+" x on x."+TAG+" = t."+ID+
             " left join "+Cache.getTableName(MoneyRecord.class)+" r on r."+UUID+" = x."+RECORD+
-            " where cast(strftime('%H',datetime("+TIME+", 'unixepoch')) as integer) > ? "+
-            "and cast(strftime('%H',datetime("+TIME+", 'unixepoch')) as integer) < ? "+
-            "and (("+LOCLAT+" > ? and "+LOCLAT+" < ? and "+LOCLNG+" > ? and "+LOCLNG+" < ?) or ("+LOCLAT+" = 0 and "+LOCLNG+" = 0)) "+
-            "and abs(r."+AMOUNT+") > ? and abs(r."+AMOUNT+") < ? "+
-            "group by t."+ID+
-            " order by count(r."+ID+") desc "+
-            "limit 20";
+            " where cast(strftime('%H',datetime("+TIME+", 'unixepoch')) as integer) >= "+fromHours+
+            " and cast(strftime('%H',datetime("+TIME+", 'unixepoch')) as integer) <= "+toHours+
+            " and (("+LOCLAT+" >= "+fromLat+" and "+LOCLAT+" <= "+toLat+" and "+LOCLNG+" >= "+fromLng+" and "+LOCLNG+" <= "+toLng+") or ("+LOCLAT+" = 0 and "+LOCLNG+" = 0))";
 
-        String[] params = new String[]{
-                Integer.toString(fromHours),
-                Integer.toString(toHours),
-                Double.toString(fromLat),
-                Double.toString(toLat),
-                Double.toString(fromLng),
-                Double.toString(toLng),
-                Integer.toString(fromAmount),
-                Integer.toString(toAmount)
-        };
+        if (amount != 0){
+            query+=" and abs(r."+AMOUNT+") >= "+fromAmount+" and abs(r."+AMOUNT+") <= "+toAmount;
+        }
 
-        Cursor tagsCursor = ActiveAndroid.getDatabase().rawQuery(query, params);
+        query+=" group by t."+ID+
+                " order by count(r."+ID+") desc "+
+                "limit 10";
+
+        Log.d("SUGGESTED",query);
+
+        Cursor tagsCursor = ActiveAndroid.getDatabase().rawQuery(query, null);
         String[] tags = new String[tagsCursor.getCount()];
         while (tagsCursor.moveToNext()){
             tags[tagsCursor.getPosition()] = tagsCursor.getString(0);

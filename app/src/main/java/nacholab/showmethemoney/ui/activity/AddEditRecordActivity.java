@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -32,7 +34,7 @@ import nacholab.showmethemoney.ui.view.TagsInputView;
 import nacholab.showmethemoney.utils.MoneyHelper;
 import nacholab.showmethemoney.utils.StringUtils;
 
-public class AddEditRecordActivity extends AuthenticatedActivity implements View.OnClickListener  {
+public class AddEditRecordActivity extends AuthenticatedActivity implements View.OnClickListener, TextWatcher {
 
     public static final String RECORD_UUID = "uuid";
 
@@ -80,6 +82,8 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
         tagsInput.setAdapter(tagsAdapter);
         tagsInput.allowDuplicates(false);
 
+        amount.addTextChangedListener(this);
+
         String[] suggestedTags;
 
         addSuggestedTags.setOnClickListener(this);
@@ -92,7 +96,7 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
         }
 
         if (editingRecord!=null){
-            suggestedTags = getMainApp().getDal().findSuggestedTags(editingRecord.getAmount(),editingRecord.getTime(),editingRecord.getLoclat(),editingRecord.getLoclng());
+            updateSuggestedTags(editingRecord.getAmount(),editingRecord.getTime(),editingRecord.getLoclat(),editingRecord.getLoclng());
 
             title.setText(R.string.edit_record);
 
@@ -132,13 +136,31 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
                 }
             }
         }else{
-            suggestedTags = getMainApp().getDal().findSuggestedTags(0,Math.round(System.currentTimeMillis()/1000),0,0);
+            updateSuggestedTagsFromCurrentState();
             title.setText(R.string.create_record);
             setAccount(0);
             expense.setChecked(true);
             amount.requestFocus();
         }
+    }
 
+    private void updateSuggestedTagsFromCurrentState(){
+        int currentAmount;
+        double[] location = getCurrentLocation();
+
+        try{
+            currentAmount = Integer.parseInt(amount.getText().toString()) * 100;
+        }catch (Exception e){
+            currentAmount = 0;
+        }
+
+        updateSuggestedTags(currentAmount,Math.round(System.currentTimeMillis()/1000),location[0],location[1]);
+    }
+
+    private void updateSuggestedTags(int amount, long time, double lat, double lng){
+        String[] suggestedTags = getMainApp().getDal().findSuggestedTags(amount,time,lat,lng);
+
+        suggestedTagsContainer.removeAllViews();
         for (final String tag : suggestedTags){
             TagView tagView = new TagView(this);
             tagView.setText(tag);
@@ -150,7 +172,6 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
             });
             suggestedTagsContainer.addView(tagView);
         }
-
     }
 
     private void setAccount(int idx){
@@ -237,29 +258,49 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
 
                     getMainApp().getDal().saveTags(editingRecord.getUuid(), tags);
                 }else {
-                    LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-                    Location loc=null;
-                    if (locationManager != null) {
-                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                            loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        }
-                    }
-
-                    double lat = 0;
-                    double lng = 0;
-                    if (loc!=null){
-                        lat = loc.getLatitude();
-                        lng = loc.getLongitude();
-                    }
-
+                    double[] location = getCurrentLocation();
                     MoneyRecord savedRecord = getMainApp().getDal().addRecord(
-                            realAmount, recordType, descriptionText, account, currency, time, lat, lng, true
+                            realAmount, recordType, descriptionText, account, currency, time, location[0], location[1], true
                     );
                     getMainApp().getDal().saveTags(savedRecord.getUuid(), tags);
                 }
 
                 finish();
         }
+    }
+
+    private double[] getCurrentLocation(){
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Location loc=null;
+        if (locationManager != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            }
+        }
+
+        double lat = 0;
+        double lng = 0;
+        if (loc!=null){
+            lat = loc.getLatitude();
+            lng = loc.getLongitude();
+        }
+
+        return new double[]{lat,lng};
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        updateSuggestedTagsFromCurrentState();
     }
 
     private class CurrencyListener implements ViewPager.OnPageChangeListener {
