@@ -6,6 +6,11 @@ import android.support.annotation.NonNull;
 import net.grandcentrix.tray.TrayPreferences;
 
 public class SettingsManager extends TrayPreferences {
+
+    public static double SUGGESTED_TAGS_LOCATION_MARGIN = .005d;
+    public static float SUGGESTED_TAGS_AMOUNT_MARGIN_PERCENT = .2f;
+    public static int SUGGESTED_TAGS_TIME_MARGIN_HOURS = 1;
+
     private static final String MODULE_NAME = "Settings";
     private static final int MODULE_VERSION = 1;
 

@@ -80,19 +80,7 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
         tagsInput.setAdapter(tagsAdapter);
         tagsInput.allowDuplicates(false);
 
-        String[] suggestedTags = getMainApp().getDal().findSuggestedTags(-1,-1,-1,-1);
-
-        for (final String tag : suggestedTags){
-            TagView tagView = new TagView(this);
-            tagView.setText(tag);
-            tagView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    tagsInput.addObject(tag);
-                }
-            });
-            suggestedTagsContainer.addView(tagView);
-        }
+        String[] suggestedTags;
 
         addSuggestedTags.setOnClickListener(this);
 
@@ -104,6 +92,8 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
         }
 
         if (editingRecord!=null){
+            suggestedTags = getMainApp().getDal().findSuggestedTags(editingRecord.getAmount(),editingRecord.getTime(),editingRecord.getLoclat(),editingRecord.getLoclng());
+
             title.setText(R.string.edit_record);
 
             for (int a=0; a<dbAccounts.size(); a++){
@@ -142,11 +132,25 @@ public class AddEditRecordActivity extends AuthenticatedActivity implements View
                 }
             }
         }else{
+            suggestedTags = getMainApp().getDal().findSuggestedTags(0,Math.round(System.currentTimeMillis()/1000),0,0);
             title.setText(R.string.create_record);
             setAccount(0);
             expense.setChecked(true);
             amount.requestFocus();
         }
+
+        for (final String tag : suggestedTags){
+            TagView tagView = new TagView(this);
+            tagView.setText(tag);
+            tagView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    tagsInput.addObject(tag);
+                }
+            });
+            suggestedTagsContainer.addView(tagView);
+        }
+
     }
 
     private void setAccount(int idx){

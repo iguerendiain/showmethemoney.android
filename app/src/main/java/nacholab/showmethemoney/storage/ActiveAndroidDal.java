@@ -12,8 +12,11 @@ import com.activeandroid.Model;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.From;
 import com.activeandroid.query.Select;
+import com.activeandroid.util.Log;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import nacholab.showmethemoney.model.Currency;
@@ -36,6 +39,9 @@ public class ActiveAndroidDal extends BaseDal{
     private static final String DELETED = "deleted";
     private static final String ACCOUNT = "account";
     private static final String RECORD = "record";
+    private static final String LOCLAT = "loclat";
+    private static final String LOCLNG = "loclng";
+    private static final String AMOUNT = "amount";
     private static final String TAG = "tag";
     private static final String TAG_RECORD = "tag_record";
     private static final String TIME = "time";
@@ -140,7 +146,52 @@ public class ActiveAndroidDal extends BaseDal{
 
     @Override
     public String[] findSuggestedTags(int amount, long time, double lat, double lng) {
-        return findTagsByUsage();
+        double fromLat = lat - SettingsManager.SUGGESTED_TAGS_LOCATION_MARGIN;
+        double toLat = lat + SettingsManager.SUGGESTED_TAGS_LOCATION_MARGIN;
+        double fromLng = lng - SettingsManager.SUGGESTED_TAGS_LOCATION_MARGIN;
+        double toLng = lng + SettingsManager.SUGGESTED_TAGS_LOCATION_MARGIN;
+        int absAmount = Math.abs(amount);
+        int fromAmount = Math.round(absAmount - absAmount * SettingsManager.SUGGESTED_TAGS_AMOUNT_MARGIN_PERCENT);
+        int toAmount = Math.round(absAmount + absAmount * SettingsManager.SUGGESTED_TAGS_AMOUNT_MARGIN_PERCENT);
+
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(time * 1000);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int fromHours = hour - SettingsManager.SUGGESTED_TAGS_TIME_MARGIN_HOURS;
+        int toHours = hour + SettingsManager.SUGGESTED_TAGS_TIME_MARGIN_HOURS;
+
+        String query =
+            "select t."+TAG+
+            " from "+TAG+" t "+
+            "left join "+TAG_RECORD+" x on x."+TAG+" = t."+ID+
+            " left join "+Cache.getTableName(MoneyRecord.class)+" r on r."+UUID+" = x."+RECORD+
+            " where cast(strftime('%H',datetime("+TIME+", 'unixepoch')) as integer) > ? "+
+            "and cast(strftime('%H',datetime("+TIME+", 'unixepoch')) as integer) < ? "+
+            "and (("+LOCLAT+" > ? and "+LOCLAT+" < ? and "+LOCLNG+" > ? and "+LOCLNG+" < ?) or ("+LOCLAT+" = 0 and "+LOCLNG+" = 0)) "+
+            "and abs(r."+AMOUNT+") > ? and abs(r."+AMOUNT+") < ? "+
+            "group by t."+ID+
+            " order by count(r."+ID+") desc "+
+            "limit 20";
+
+        String[] params = new String[]{
+                Integer.toString(fromHours),
+                Integer.toString(toHours),
+                Double.toString(fromLat),
+                Double.toString(toLat),
+                Double.toString(fromLng),
+                Double.toString(toLng),
+                Integer.toString(fromAmount),
+                Integer.toString(toAmount)
+        };
+
+        Cursor tagsCursor = ActiveAndroid.getDatabase().rawQuery(query, params);
+        String[] tags = new String[tagsCursor.getCount()];
+        while (tagsCursor.moveToNext()){
+            tags[tagsCursor.getPosition()] = tagsCursor.getString(0);
+        }
+        tagsCursor.close();
+
+        return tags;
     }
 
     @Override
